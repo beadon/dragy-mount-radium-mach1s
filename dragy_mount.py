@@ -12,11 +12,11 @@ Parts (not yet printed):
              down through its floor into the pad's threads (heads under the Dragy, reachable when it's out);
              they and the pocket's walls locate it (an optional plug into the oval hole: PLUG).
              The Dragy slides in from the USB-C end (the rider's right); lips along both long sides and
-             the far end keep it from lifting out; the far end's wall has a window for the white connector.
+             the far end keep it from lifting out; the far end's wall has a push-out hole (pointed top: no supports).
              The floor is thick enough to lift the USB-C port clear of the pocket's rim, so a cable plugs in.
     cap      the USB-C dust cover: it slips over the tray's open end and holds the Dragy in; a gasket ring
              on its inside presses on the Dragy's end face round the USB-C opening (nothing enters the
-             socket). A tether strap, printed flat with it, rings over a peg on the holder. Print it in TPU.
+             socket). A tether strap, printed flat with it, hooks onto the holder. Print it in TPU.
 
 Coordinates: the parts are built in the PAD frame, x across the board (rider's right), y along the pad
 toward the nose (rising 30 deg), z out of the pad; origin at the oval hole's centre on the pad's surface.
@@ -47,6 +47,7 @@ HOLE_W, HOLE_L, HOLE_D = 16.0, 17.0, 9.0   # the oval hole (as on the rear truck
 # --- The Dragy (laptimer.com unit, measured with calipers 2026-11-16) ---
 DRAGY_L, DRAGY_W, DRAGY_T = 42.98, 26.96, 13.94
 DRAGY_R = 4.0        # plan-view corner radius (ESTIMATE from photos)
+DRAGY_EDGE_R = 2.0   # its BOTTOM edges are rounded, 2 mm (calipers); its top edges are sharp
 USB_W, USB_H, USB_DEPTH = 8.34, 2.56, 6.2   # USB Type-C receptacle opening (spec), on the +x end face, its long
                                             # side along y, at mid-height (z) of the Dragy
 # Off centre along y (owner, 2026-11-16): the connector's opening in the case is 6.91 from one side wall and
@@ -57,7 +58,10 @@ USB_Y = USB_SIDE * (DRAGY_W / 2 - 6.91 - (DRAGY_W - 6.91 - 10.21) / 2)
 TONGUE_W, TONGUE_T = 6.69, 0.70   # the socket's centre tongue (contacts on both faces), from its back wall to
 TONGUE_RECESS = 0.3               # this far inside the end face (ESTIMATE: as close to the face as plausible)
 USB_PLUG = (13.0, 7.5, 30.0)  # a charging plug's moulding, across x height x length (ESTIMATE, for the clearance check)
-WHITE_CONN_WIN = (16.0, 8.0)  # window (y, z) in the far end's wall for the white connector (ESTIMATE)
+# Push-out hole through the far end's wall (y, z): to push the Dragy out toward the open end (it also leaves
+# part of the white connector visible). Straight sides, then a 45 deg pointed top, so each layer is held
+# by the sides and nothing overhangs.
+PUSH_W, PUSH_H = 8.0, 3.4     # width; height of the straight sides (the point adds PUSH_W / 2)
 
 # --- Holder ---
 FIT = 0.25           # clearance per side round the Dragy
@@ -74,9 +78,17 @@ BOLT_HOLE, HEAD_BORE, HEAD_H = s.BOLT_HOLE, s.HEAD_BORE, s.HEAD_H
 
 # --- Tether: a TPU strap, printed flat with the cap, from its end plate to a peg on the holder ---
 TETHER_W, TETHER_T, TETHER_L = 4.0, 1.0, 32.0   # strap width, thickness, length (to the ring's centre)
-RING_OD, RING_ID = 7.5, 3.2                     # the ring at its end; it stretches over the peg's head
-PEG_D, PEG_HEAD, PEG_L = 3.0, 4.6, 3.0          # mushroom peg on the holder's -y (tail-side) wall
+RING_OD, RING_ID = 8.0, 3.8                     # the ring at its end: it sits on the hook's arm without stretching
+# Hook on the holder's -y (tail-side) wall: a round arm rising out of the wall at 45 deg (a round bar at 45 deg
+# has a 45 deg underside, so it prints without supports; a peg straight out from the wall would start in
+# mid-air). Its tip swells wider than the ring's hole, so the TPU ring stretches over it, relaxes onto the arm,
+# and has to stretch again to come off. The swell grows only upward and sideways, teardrop-fashion: the
+# underside stays one straight 45 deg line. No sharp edges to cut the TPU.
+PEG_D, PEG_L = 3.2, 5.0                         # arm's diameter and its length along its axis
+PEG_TIP, PEG_FLARE = 4.6, 2.2                   # the tip's diameter and the swell's length
+PEG_ROUND = 0.6                                 # the tip's end edge is rounded off this much
 PEG_X = -6.0                                    # along the holder; the strap wraps round the cap's side to reach it
+PEG_Z = None                                    # the arm's root height (None: a little under the cap's snap bumps)
 
 # --- Cap (USB-C dust cover) ---
 CAP_WALL = 1.6
@@ -127,9 +139,22 @@ def _socket(x_end, z_mid, shrink=0.0, depth=USB_DEPTH):
     return s.place(st.extrude(depth), rot, [x_end, USB_Y, z_mid])
 
 
+def rounded_bottom_block(l, w, r_plan, r_edge, h, grow=0.0, steps=8):
+    """A block l x w x h (plan corners r_plan) whose bottom edges are rounded at r_edge; grown outward by
+    `grow` in plan only (the bottom stays at z = 0). Convex, so it's a hull of thin layers."""
+    layers = Manifold()
+    for i in range(steps + 1):
+        t = np.radians(90 * i / steps)
+        inset = r_edge * (1 - np.sin(t)) - grow
+        z = r_edge * (1 - np.cos(t))
+        layers += rounded_rect(l - 2 * inset, w - 2 * inset, max(r_plan - inset, 0.2)).extrude(0.01).translate([0, 0, z])
+    top = rounded_rect(l + 2 * grow, w + 2 * grow, r_plan + grow).extrude(0.01).translate([0, 0, h - 0.01])
+    return Manifold.hull(layers + top)
+
+
 def dragy():
     """The Dragy, with its USB-C socket, in place (pad frame)."""
-    body = rounded_rect(DRAGY_L, DRAGY_W, DRAGY_R).extrude(DRAGY_T)
+    body = rounded_bottom_block(DRAGY_L, DRAGY_W, DRAGY_R, DRAGY_EDGE_R, DRAGY_T)
     body -= _socket(DRAGY_L / 2, DRAGY_T / 2)
     tongue_l = USB_DEPTH - TONGUE_RECESS
     body += Manifold.cube([tongue_l + 0.5, TONGUE_W, TONGUE_T]).translate(
@@ -150,11 +175,25 @@ def screws():
     return m
 
 
+def tether_hook():
+    """The arm and lip the tether's ring hangs on, on the tail-side wall (pad frame)."""
+    d = np.array([0.0, -1.0, 1.0]) / np.sqrt(2)     # out of the -y wall and up, 45 deg
+    root = np.array([PEG_X, -OUT_W / 2 + 0.8, (PEG_Z if PEG_Z is not None else SNAP_Z - 3.0)])  # 0.8 mm into the wall
+    L, r0, R = PEG_L + 0.8, PEG_D / 2, PEG_TIP / 2
+
+    def disc(r, z):   # a thin disc whose lowest point (local -y: down the 45 deg underside) is at y = -r0
+        return CrossSection.circle(r, 40).translate([0, r - r0]).extrude(0.01).translate([0, 0, z])
+    hook = Manifold.hull(disc(r0, 0) + disc(r0, L - PEG_FLARE))
+    hook += Manifold.hull(disc(r0, L - PEG_FLARE) + disc(R, L - PEG_ROUND) + disc(R - PEG_ROUND, L - 0.01))
+    return s.along(hook, root, d)
+
+
 def holder(grip=True):
     w2 = OUT_W / 2
     outer = Manifold.cube([X_OPEN - X_FAR, OUT_W, TOP]).translate([X_FAR, -w2, 0])
     outer += Manifold.cube([2 * BASE_X, OUT_W, FLOOR_TOP]).translate([-BASE_X, -w2, 0])   # base under both screws
-    pocket = rounded_rect(POCKET_L, POCKET_W, DRAGY_R + FIT).extrude(POCKET_H).translate([0, 0, FLOOR_TOP])
+    # The pocket's floor corners are rounded like the Dragy's bottom edges, FIT clear of them.
+    pocket = rounded_bottom_block(DRAGY_L, DRAGY_W, DRAGY_R, DRAGY_EDGE_R, POCKET_H, grow=FIT).translate([0, 0, FLOOR_TOP])
     # Lips: the opening above the Dragy is the pocket less LIP at the sides and the far end; open at +x.
     # Underneath, each lip slopes at 45 deg (a hull from the pocket's outline at its top to the opening).
     open_l = POCKET_L - LIP + 20
@@ -164,27 +203,27 @@ def holder(grip=True):
                               [-POCKET_L / 2 + LIP, -(POCKET_W - 2 * LIP) / 2, FLOOR_TOP + POCKET_H + LIP]))
     mouth = Manifold.cube([WALL + 2, POCKET_W, POCKET_H + LIP + 1]).translate([X_OPEN - 1, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
-    # Window in the far wall for the white connector.
-    wy, wz = WHITE_CONN_WIN
-    h -= Manifold.cube([END_WALL + 2, wy, wz]).translate([X_FAR - 1, -wy / 2, FLOOR_TOP + DRAGY_T / 2 - wz / 2])
+    # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
+    # Centred on the Dragy's mid-height; the point stays well under the lip.
+    tall = PUSH_H + PUSH_W / 2
+    z0 = FLOOR_TOP + DRAGY_T / 2 - tall / 2
+    assert z0 + tall <= FLOOR_TOP + POCKET_H - 1.0, "the push-out hole would reach the far-end lip"
+    prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]])
+    rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
+    h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
     # Optional plug into the oval hole.
     if PLUG:
         h += hole_section().offset(-PLUG_CLR, circular_segments=64).extrude(PLUG_DEPTH + 0.5).translate([0, 0, -PLUG_DEPTH])
     # Grip bumps inside the side walls near the open end: GRIP - FIT (0.05 mm) of interference.
     for sy in ((1, -1) if grip else ()):
         bump = Manifold.cylinder(POCKET_H - 1, 1.5, circular_segments=24).scale([1, GRIP / 1.5, 1])
-        h += bump.translate([X_OPEN - 4, sy * POCKET_W / 2, FLOOR_TOP + 0.5]) ^ Manifold.cube(
+        h += bump.translate([X_OPEN - 4, sy * POCKET_W / 2, FLOOR_TOP - 0.01]) ^ Manifold.cube(   # from the floor: no overhang
             [10, POCKET_W, 40]).translate([X_OPEN - 9, -POCKET_W / 2, 0])
     # Snap bumps on the outside of both side walls, for the cap (domes, half sunk into the wall).
     for sy in (1, -1):
         h += Manifold.sphere(1.5, circular_segments=24).scale([1, CAP_SNAP / 1.5, 1]).translate(
             [X_OPEN - CAP_DEPTH / 2, sy * w2, SNAP_Z])
-    # Peg for the cap's tether, on the tail-side (-y) wall: a shaft and a head with a 45 deg lead-in.
-    shaft = Manifold.cylinder(PEG_L + 0.5, PEG_D / 2, circular_segments=24)
-    head = Manifold.cylinder((PEG_HEAD - PEG_D) / 2, PEG_D / 2, PEG_HEAD / 2, circular_segments=24)
-    head += Manifold.cylinder(0.6, PEG_HEAD / 2, PEG_HEAD / 2, circular_segments=24).translate([0, 0, -0.6])
-    peg = shaft + head.mirror([0, 0, 1]).translate([0, 0, PEG_L + 0.5])
-    h += peg.rotate([90, 0, 0]).translate([PEG_X, -w2 + 0.5, SNAP_Z])
+    h += tether_hook()
     # The two M4 screws: clearance holes down to the pad, counterbores up from the head's seat.
     for sx in (1, -1):
         h -= s.rod(SEAT + 2, BOLT_HOLE, -1).translate([sx * M4_SPACING / 2, 0, 0])
@@ -258,7 +297,7 @@ def main():
         "screws end flush with the casting's underside": abs(SEAT - SCREW_LEN + THREAD) < 1e-9,
         "cap clear of the holder": (c ^ h).volume() < 0.01,
         "cap clear of the screws": (c ^ sc).volume() < 0.01,
-        "the tether's ring fits round the peg's shaft": RING_ID > PEG_D and RING_ID < PEG_HEAD,
+        "the tether's ring sits on the hook's arm but must stretch over its tip": PEG_D < RING_ID < PEG_TIP - 0.5,
         "each screw head fully seated on plastic": all(((s.rod(0.5, 7.0, SEAT - 0.5) - s.rod(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
                                                         .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1)),
         # The ring pushes the Dragy back against the far wall; there it presses GASKET_SQUEEZE into its end face.

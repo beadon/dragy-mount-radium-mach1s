@@ -18,7 +18,7 @@ holes make that unnecessary here, but the shoe stays in this repo as its own com
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v2.stl` | Floor down. No supports: the lips over the Dragy's edges have 45° undersides, and the far-end window's top is a 16 mm bridge. |
+| Holder | `dragy_holder_v2.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
 | USB-C cap (with its tether) | `dragy_usbc_cap_v2.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
 | Assembly | `dragy_assembly_v2.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
 | Shoe (separate component) | `shoe.stl` | Not used by v2. Top face down, plug up, no supports. See `shoe.py`. |
@@ -38,7 +38,9 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 - **The Dragy** (42.98 × 26.96 × 13.94 mm, measured) lies parallel to the pad, logo up, long side
   across the board, so the GPS sees open sky. It slides in from the USB-C end, the rider's right.
   Lips along both long sides and the far end stop it lifting out, and two small bumps inside the side
-  walls hold it while it charges. The far end's wall has a window for the white connector. The
+  walls hold it while it charges. The far end's wall has an 8 mm push-out hole (pointed top, so it
+  prints without supports): push through it to slide the Dragy out. The pocket's floor corners are
+  rounded to match the Dragy's rounded bottom edges (2 mm; its top edges are sharp). The
   screw heads sit under the Dragy: slide it out to reach them.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
   USB-C port's centre 7.8 mm above it, so a charging cable plugs straight in from the right, over the rim.
@@ -47,7 +49,9 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   Dragy's end face round the USB-C opening (pushing the Dragy back against the far wall); nothing goes
   into the socket, so its contacts and centre tongue are never touched, and a millimetre of error in
   the port's position doesn't matter. A **tether** strap, printed flat with the cap, ends in a ring that
-  stretches over a peg on the holder's tail-side wall, so the cap can't be lost. Pull the cap off to charge.
+  hooks onto the holder's tail-side wall, so the cap can't be lost: an arm rises out of the wall at
+  45°, and its tip flares wider than the ring's hole, so the TPU ring stretches over the tip, relaxes
+  onto the arm, and has to stretch again to come off. Pull the cap off to charge.
 - **The USB-C port is off centre** (measured): its case cut-out is 6.91 mm from one side wall and 10.21 mm
   from the other, so its centre is 1.65 mm off the Dragy's centreline. With the logo up and the USB-C end
   on the rider's right, it's toward the **tail** (`USB_SIDE` in `dragy_mount.py`).
@@ -70,8 +74,7 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 
 ## Not yet known
 
-- The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's size
-  (a 16 × 8 mm window is left for it).
+- The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's position (the push-out hole may leave part of it visible).
 - The pad pocket's corner radius (assumed 8 mm) and the size of a charging plug's moulding (assumed
   13 × 7.5 mm, 30 mm long) for the rim-clearance check.
 

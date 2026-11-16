@@ -48,8 +48,11 @@ pockets and slots that would be hard to clear.
 
 ## Per part
 
-- **Holder** (`dragy_holder_v2.stl`): floor down. Supports off: the lips' undersides are 45°, the
-  screw counterbores are vertical, and the far-end window's top edge is a 16 mm bridge.
+- **Holder** (`dragy_holder_v2.stl`): floor down. Supports off: nothing overhangs. The lips' undersides
+  are 45°, the screw counterbores are vertical, the far-end push-out hole has a 45° pointed top, and the
+  tether's hook rises out of the wall at 45°. (Don't print it on its side: the cap's snap bumps would overhang.)
+- If the slicer still adds supports, it's because "Support on build plate only" is on with auto supports:
+  turn supports off for this part.
 - **USB-C cap** (`dragy_usbc_cap_v2.stl`): end plate down, gasket up, the tether flat on the bed. TPU
   (e.g. a 95A TPU profile, slow), supports off.
 - **Shoe** (`shoe.stl`, not used by v2): as exported, top face down, plug up. Supports off: with them on,
