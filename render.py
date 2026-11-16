@@ -9,7 +9,6 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 import dragy_mount as g
-import shoe as s
 
 
 def tris(m):
@@ -65,24 +64,22 @@ def render(objs, az, el, title, W=700, H=560):
 
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else "docs/render.png"
-    sh, cut, screw = s.shoe()
-    housing, _ = s.surroundings()
-    t, c, d = g.tray(), g.cap(), g.dragy()
-    steel = s.screw_solid(screw) + s.bolt_solids(g.BOLT_LEN)
-    grey, green, red, amber, blue, dark = (170, 170, 175), (60, 160, 90), (205, 50, 40), (240, 170, 30), (60, 110, 210), (40, 40, 40)
-    full = [(housing, grey), (sh, green), (t, red), (c, amber), (d, blue), (steel, dark)]
-    lift = [(sh, green), (steel - s.bolt_solids(g.BOLT_LEN), dark), (s.bolt_solids(g.BOLT_LEN).translate([0, 0, 40]), dark),
-            (t.translate([0, 0, 25]), red), (d.translate([0, 0, 50]), blue), (c.translate([25, 0, 50]), amber)]
-    ims = [render(full, -40, 30, "assembled on hole A (rear-truck surroundings shown): shoe green, tray red, Dragy blue, USB-C cap amber"),
-           render(lift, -40, 25, "exploded: Dragy slides in from the USB-C end; the cap closes that end and plugs the socket"),
-           render([(sh, green), (t, red), (c, amber), (d, blue), (steel, dark)], 90, 5, "from the rider's right (nose to the right)"),
-           render([(t, red), (c.translate([12, 0, 0]), amber)], 60, 35, "tray and cap (cap pulled off)")]
+    w = g.to_world
+    cast, h, c, d, sc = w(g.casting()), w(g.holder()), w(g.cap()), w(g.dragy()), w(g.screws())
+    grey, red, amber, blue, dark = (170, 170, 175), (205, 50, 40), (240, 170, 30), (60, 110, 210), (40, 40, 40)
+    up = g.PAD_FRAME[:, 2]                           # out of the pad, for the exploded view
+    lift = lambda m, k: m.translate(list(k * up))
+    ims = [render([(cast, grey), (h, red), (c, amber), (d, blue)], -40, 35,
+                  "v2 in the front swingarm's pad (schematic casting): holder red, Dragy blue, USB-C cap amber"),
+           render([(cast, grey), (lift(sc, 25), dark), (lift(h, 25), red), (lift(d, 55), blue), (lift(c.translate([22, 0, 0]), 55), amber)],
+                  -40, 30, "exploded: two M4x16 into the pad's threads; the Dragy slides in from the right; the cap closes that end"),
+           render([(cast, grey), (h, red), (c, amber), (d, blue)], 90, 10, "from the rider's right (nose to the right): pad and holder at 30 deg"),
+           render([(h, red), (c.translate([12, 0, 0]), amber), (sc, dark)], 60, 40, "holder, screws and cap (cap pulled off)")]
     W, H = ims[0].size
     sheet = Image.new("RGB", (2 * W, 2 * H), "white")
     for i, im in enumerate(ims):
         sheet.paste(im, ((i % 2) * W, (i // 2) * H))
     sheet.save(path)
-
 
 if __name__ == "__main__":
     main()

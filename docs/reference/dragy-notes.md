@@ -33,3 +33,24 @@ its own project.
 - TPU is recommended for a plug that seals; PLA/PETG are too stiff for a press fit. Idea: a cap that
   clips over the holder's open end with a short nub in the socket (TPU), or a PLA version whose nub
   stops short of the socket.
+
+## Front swingarm mount point (2026-11-16)
+
+Photos in [front-swingarm-2026-11-16/](front-swingarm-2026-11-16). On top of the front swingarm,
+beyond the deck's nose, is a flat recessed pad (with a raised rim) holding the same oval hole as
+the rear truck's hole A, with **two M4 threaded holes** on either side of it, across the board.
+
+- M4 holes, centre to centre: **39.5 mm** (owner, re-measured). The 37.56 in the caliper photo is
+  not accurate (the jaws weren't at the hole centres).
+- Pad angle: **30° from flat**, the same as the rear truck, tipped the other way: it rises toward
+  the **nose**. The lip on the oval hole is at its **front** end, the higher side (on the rear truck
+  too, the lip is on the higher side, there the tail end).
+- Flat area inside the rim: **66.38 mm** across the board (use 66.3).
+- M4 threads: about **4 mm** long, right through the casting.
+- Oval hole: the same as the rear (16 across × 17 along the board, its long sides left and right),
+  **centred** between the two M4 holes.
+- Lean clearance: nothing comes near the pad.
+- USB-C (charging) end: either side works; use the rider's **right**. With the logo up, the port is off centre
+  toward the **tail**: its case cut-out is 6.91 mm from one side wall and 10.21 mm from the other (~0.1 slop),
+  so its centre is 1.65 mm off the centreline.
+- Not yet measured: the flat area's length along the board, and how far the rim stands above it.

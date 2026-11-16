@@ -48,10 +48,9 @@ pockets and slots that would be hard to clear.
 
 ## Per part
 
-- **Shoe** (`shoe.stl`): as exported, top face down, plug up. Supports can be off. Its overhangs
-  are short flat bridges (the nut slots' ceilings) and near-level round holes. With supports on,
-  build-plate-only supports can reach into the side-opening nut slots: turn them off for this part.
-- **Dragy tray** (`dragy_tray_v1.stl`): floor down. Supports off. The far-end window's top edge is a
-  16 mm bridge.
-- **USB-C cap** (`dragy_usbc_cap_v1.stl`): end plate down, nub up. TPU (e.g. a 95A TPU profile, slow),
-  supports off.
+- **Holder** (`dragy_holder_v2.stl`): floor down. Supports off: the lips' undersides are 45°, the
+  screw counterbores are vertical, and the far-end window's top edge is a 16 mm bridge.
+- **USB-C cap** (`dragy_usbc_cap_v2.stl`): end plate down, gasket up, the tether flat on the bed. TPU
+  (e.g. a 95A TPU profile, slow), supports off.
+- **Shoe** (`shoe.stl`, not used by v2): as exported, top face down, plug up. Supports off: with them on,
+  build-plate-only supports can reach into the side-opening nut slots.
