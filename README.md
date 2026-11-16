@@ -14,7 +14,6 @@ holes make that unnecessary here, but the shoe stays in this repo as its own com
 
 ![Dragy mount v3, shaded renders](docs/render.png)
 
-
 ## Parts
 
 | Part | File (in `out/`) | Print |
