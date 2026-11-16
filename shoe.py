@@ -145,7 +145,9 @@ def write_stl(m, path):
 
 
 def write_obj(objects, path, colours):
-    """One OBJ with a named, coloured object per part (plus its .mtl), for Blender."""
+    """One OBJ with a named, coloured object per part (plus its .mtl), for Blender.
+    OBJ is Y-up by convention (Blender's importer assumes it), so world (x, y, z) is written as (x, z, -y):
+    with Blender's default import, sky is up and the nose points along Blender's +y."""
     mtl = path.with_suffix(".mtl")
     with open(mtl, "w") as fh:
         for name, rgb in colours.items():
@@ -158,7 +160,7 @@ def write_obj(objects, path, colours):
             v = np.asarray(mesh.vert_properties)[:, :3]
             f = np.asarray(mesh.tri_verts) + base
             fh.write(f"o {name}\nusemtl {material}\n")
-            fh.writelines(f"v {x:.4f} {y:.4f} {z:.4f}\n" for x, y, z in v)
+            fh.writelines(f"v {x:.4f} {z:.4f} {-y:.4f}\n" for x, y, z in v)
             fh.writelines(f"f {a} {b} {c}\n" for a, b, c in f)
             base += len(v)
 

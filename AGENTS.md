@@ -25,6 +25,8 @@ copies in step** (and say so in both READMEs).
   slope toward the nose, z out of the pad; `PAD_FRAME` places them in the world), the schematic pad
   (`casting()`), the fit checks, and the outputs in `out/`.
 - `render.py`: shaded PNG renders (no 3D viewer needed) to `docs/render.png`.
+- `render_xray.py`: a Blender (Workbench, X-ray) render of the assembly OBJ to `docs/xray.png`; run it with
+  `blender -b -P render_xray.py` after `dragy_mount.py out`, and re-run it whenever the parts change.
 - `docs/reference/`: measurements and notes.
 
 Build: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`, then
@@ -79,5 +81,5 @@ Assumed / unknown:
   overall dimension before relying on it.
 - Use pictures (renders, sections) for 3D or orientation questions, not ASCII, and use
   nose / tail / sky / ground / rider's left/right wording.
-- They open models in Blender to review (`out/*.obj`), and test-print before committing to a design.
+- They open models in Blender to review (`out/*.obj`, written Y-up so Blender's default import is sky-up), and test-print before committing to a design.
 - Commit or push only when asked. Keep notes of measurements in the repo (`docs/reference/`).
