@@ -87,6 +87,8 @@ BOLT_HOLE, HEAD_BORE, HEAD_H = s.BOLT_HOLE, s.HEAD_BORE, s.HEAD_H
 
 # --- Tether: a TPU strap, printed flat with the cap, from its end plate to a peg on the holder ---
 TETHER_W, TETHER_T, TETHER_L = 4.0, 1.0, 32.0   # strap width, thickness, length (to the ring's centre)
+TETHER_DROP = 1.0                               # the strap runs this far below the snap bumps' height, toward the pad
+                                                # (it hit the swingarm, test fit 2026-11-16)
 RING_OD, RING_ID = 8.0, 3.8                     # the ring at its end: it sits on the hook's arm without stretching
 # Hook on the holder's -y (tail-side) wall: a round arm rising out of the wall at 45 deg (a round bar at 45 deg
 # has a 45 deg underside, so it prints without supports; a peg straight out from the wall would start in
@@ -292,10 +294,10 @@ def cap(squeeze=GASKET_SQUEEZE):
     # printed), ending in a ring. On the board it bends round the cap's side to the holder's peg.
     y0 = -(w2 + CAP_WALL)
     xs = X_OPEN + CAP_WALL - TETHER_T
-    c += Manifold.cube([TETHER_T, TETHER_L + 0.5, TETHER_W]).translate([xs, y0 - TETHER_L, SNAP_Z - TETHER_W / 2])
+    c += Manifold.cube([TETHER_T, TETHER_L + 0.5, TETHER_W]).translate([xs, y0 - TETHER_L, SNAP_Z - TETHER_DROP - TETHER_W / 2])
     ring = (Manifold.cylinder(TETHER_T, RING_OD / 2, circular_segments=48)
             - Manifold.cylinder(TETHER_T + 2, RING_ID / 2, circular_segments=32).translate([0, 0, -1]))
-    c += ring.rotate([0, 90, 0]).translate([xs, y0 - TETHER_L, SNAP_Z])
+    c += ring.rotate([0, 90, 0]).translate([xs, y0 - TETHER_L, SNAP_Z - TETHER_DROP])
     # Round its nose-side (+y) outer corner, round the inside corner, so the wall stays CAP_WALL thick.
     xi, yi = X_OPEN, w2
     corner = Manifold.cube([CAP_WALL + 1, CAP_WALL + 1, 80]).translate([xi, yi, -10])
