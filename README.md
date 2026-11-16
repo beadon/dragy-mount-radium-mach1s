@@ -43,7 +43,8 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   across the board, so the GPS sees open sky. It slides in from the USB-C end, the rider's right.
   Lips along both long sides and the far end stop it lifting out, and two small bumps inside the side
   walls hold it while it charges. The far end's wall has an 8 mm push-out hole (pointed top, so it
-  prints without supports): push through it to slide the Dragy out. The pocket's floor corners are
+  prints without supports): push through it to slide the Dragy out. It's 2 mm toward the nose of centre,
+  so the wall covers the white connector (off centre toward the tail) and pushing can't damage it. The pocket's floor corners are
   rounded to match the Dragy's rounded bottom edges (2 mm; its top edges are sharp). The
   screw heads sit under the Dragy: slide it out to reach them.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
@@ -79,7 +80,7 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 
 ## Not yet known
 
-- The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's position (the push-out hole may leave part of it visible).
+- The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's exact position (the push-out hole was moved 2 mm toward the nose after the first test print, to keep it off the connector).
 - The pad pocket's corner radius (assumed 8 mm) and the size of a charging plug's moulding (assumed
   13 × 7.5 mm, 30 mm long) for the rim-clearance check.
 

@@ -62,6 +62,8 @@ USB_PLUG = (13.0, 7.5, 30.0)  # a charging plug's moulding, across x height x le
 # part of the white connector visible). Straight sides, then a 45 deg pointed top, so each layer is held
 # by the sides and nothing overhangs.
 PUSH_W, PUSH_H = 8.0, 3.4     # width; height of the straight sides (the point adds PUSH_W / 2)
+PUSH_Y = 2.0                  # moved toward the NOSE (+y) off centre so it covers less of the white connector,
+                              # which is off centre the other way (owner, test print 2026-11-16)
 
 # --- Holder ---
 FIT = 0.25           # clearance per side round the Dragy
@@ -220,11 +222,12 @@ def holder(grip=True):
     mouth = Manifold.cube([WALL + 2, POCKET_W, POCKET_H + LIP + 1]).translate([X_OPEN - 1, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
-    # Centred on the Dragy's mid-height; the point stays well under the lip.
+    # Centred on the Dragy's mid-height, PUSH_Y toward the nose; the point stays well under the lip.
     tall = PUSH_H + PUSH_W / 2
     z0 = FLOOR_TOP + DRAGY_T / 2 - tall / 2
     assert z0 + tall <= FLOOR_TOP + POCKET_H - 1.0, "the push-out hole would reach the far-end lip"
-    prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]])
+    assert abs(PUSH_Y) + PUSH_W / 2 <= POCKET_W / 2 - (DRAGY_R + FIT), "the push-out hole would reach the pocket's corner"
+    prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]]).translate([PUSH_Y, 0])
     rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
     h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
     # Optional plug into the oval hole.

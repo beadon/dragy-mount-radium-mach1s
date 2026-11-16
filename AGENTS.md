@@ -66,8 +66,9 @@ Assumed / unknown:
   The pocket's corner radius is assumed (8 mm).
 - Dragy: USB-C on its end face, long side across the 27 mm width, its case cut-out 6.91 from one side wall
   and 10.21 from the other (measured, ~0.1 slop): centre 1.65 off centre, toward the TAIL with the logo up and
-  the USB-C end on the rider's right (owner, `USB_SIDE = -1`). Mid-height assumed. 4 mm plan corner radius; bottom edges rounded 2 mm, top edges sharp (owner). The far wall has an 8 mm push-out hole
-  with a 45° pointed top (a flat-topped window was a bridge the screw counterbore broke up; a 45° ramp through
+  the USB-C end on the rider's right (owner, `USB_SIDE = -1`). Mid-height assumed. 4 mm plan corner radius; bottom edges rounded 2 mm, top edges sharp (owner). The far wall has an 8 mm push-out hole,
+  2 mm toward the nose of centre (`PUSH_Y`; owner, test print 2026-11-16: centred, it uncovered part of the white
+  connector, which is off centre toward the tail), with a 45° pointed top (a flat-topped window was a bridge the screw counterbore broke up; a 45° ramp through
   the wall's thickness still left a 16 mm span; its cutter also clipped the lip, leaving a floating sliver).
 - USB-C receptacle opening 8.34 × 2.56 mm, ~6.2 mm deep (USB Type-C spec / maker drawings).
   Its centre tongue (contacts on both faces) is about 6.69 wide × 0.7 thick; the cap's nub is a sleeve
