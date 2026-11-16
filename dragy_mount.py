@@ -88,6 +88,8 @@ PEG_D, PEG_L = 3.2, 5.0                         # arm's diameter and its length 
 PEG_TIP, PEG_FLARE = 4.6, 2.2                   # the tip's diameter and the swell's length
 PEG_ROUND = 0.6                                 # the tip's end edge is rounded off this much
 PEG_X = -6.0                                    # along the holder; the strap wraps round the cap's side to reach it
+HOOK_EMBED = 2.5                                # the arm runs this much further back into the wall (> PEG_D / 2)
+HOOK_SKIN = 0.4                                 # ...but is trimmed this far short of the pocket's side
 PEG_Z = None                                    # the arm's root height (None: a little under the cap's snap bumps)
 
 # --- Cap (USB-C dust cover) ---
@@ -176,16 +178,30 @@ def screws():
 
 
 def tether_hook():
-    """The arm and lip the tether's ring hangs on, on the tail-side wall (pad frame)."""
+    """The arm and flared tip the tether's ring hangs on, on the tail-side wall (pad frame).
+    The arm runs back into the wall far enough that its 45 deg underside starts INSIDE the wall (its axis
+    0.8 mm in, as before, left the bottom of the arm's flat root face 0.33 mm out in the air: a floating start
+    that the slicer supported), then it's trimmed short of the pocket so it can't break through."""
     d = np.array([0.0, -1.0, 1.0]) / np.sqrt(2)     # out of the -y wall and up, 45 deg
-    root = np.array([PEG_X, -OUT_W / 2 + 0.8, (PEG_Z if PEG_Z is not None else SNAP_Z - 3.0)])  # 0.8 mm into the wall
-    L, r0, R = PEG_L + 0.8, PEG_D / 2, PEG_TIP / 2
+    # Where the axis was 0.8 mm into the wall; the outside of the hook is placed from here.
+    ref = np.array([PEG_X, -OUT_W / 2 + 0.8, (PEG_Z if PEG_Z is not None else SNAP_Z - 3.0)])
+    root = ref - HOOK_EMBED * d                     # run on back into the wall
+    L, r0, R = PEG_L + 0.8 + HOOK_EMBED, PEG_D / 2, PEG_TIP / 2
 
     def disc(r, z):   # a thin disc whose lowest point (local -y: down the 45 deg underside) is at y = -r0
         return CrossSection.circle(r, 40).translate([0, r - r0]).extrude(0.01).translate([0, 0, z])
     hook = Manifold.hull(disc(r0, 0) + disc(r0, L - PEG_FLARE))
     hook += Manifold.hull(disc(r0, L - PEG_FLARE) + disc(R, L - PEG_ROUND) + disc(R - PEG_ROUND, L - 0.01))
-    return s.along(hook, root, d)
+    keep = Manifold.cube([40, 40, 80]).translate([PEG_X - 20, -POCKET_W / 2 - HOOK_SKIN - 40, -40])
+    return s.along(hook, root, d) ^ keep
+
+
+def hook_rooted():
+    """The lowest point of the hook outside the wall lies on the wall's face (nothing hangs below it)."""
+    w2 = OUT_W / 2
+    outside = tether_hook() ^ Manifold.cube([40, 20, 80]).translate([PEG_X - 20, -w2 - 20, -40])
+    v = np.asarray(outside.to_mesh().vert_properties)[:, :3]
+    return abs(v[v[:, 2].argmin(), 1] + w2) < 1e-3
 
 
 def holder(grip=True):
@@ -298,6 +314,8 @@ def main():
         "cap clear of the holder": (c ^ h).volume() < 0.01,
         "cap clear of the screws": (c ^ sc).volume() < 0.01,
         "the tether's ring sits on the hook's arm but must stretch over its tip": PEG_D < RING_ID < PEG_TIP - 0.5,
+        # The hook's part outside the wall must meet the wall at its lowest point, or it starts in mid-air.
+        "the tether hook starts inside the wall (no floating start)": hook_rooted(),
         "each screw head fully seated on plastic": all(((s.rod(0.5, 7.0, SEAT - 0.5) - s.rod(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
                                                         .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1)),
         # The ring pushes the Dragy back against the far wall; there it presses GASKET_SQUEEZE into its end face.
