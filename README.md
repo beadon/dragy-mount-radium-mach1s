@@ -14,9 +14,6 @@ holes make that unnecessary here, but the shoe stays in this repo as its own com
 
 ![Dragy mount v3, shaded renders](docs/render.png)
 
-X-ray view (Blender, `render_xray.py`): the screws in their counterbores, the push-out hole, the cap's gasket and the tether hook, seen through the parts.
-
-![Dragy mount v3, X-ray view in the front swingarm's pad](docs/xray.png)
 
 ## Parts
 
@@ -71,7 +68,6 @@ python3 -m venv .venv
 .venv/bin/python dragy_mount.py out   # holder and cap STLs and the assembly OBJ (runs every fit check)
 .venv/bin/python shoe.py out          # the shoe on its own
 .venv/bin/python render.py            # docs/render.png
-blender -b -P render_xray.py          # docs/xray.png (X-ray view of the assembly OBJ; needs Blender)
 ```
 
 Every dimension is a named constant, in millimetres, at the top of `shoe.py` and `dragy_mount.py`.
