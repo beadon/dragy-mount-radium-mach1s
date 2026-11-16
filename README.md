@@ -7,25 +7,25 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v2, **not yet printed**. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+**Status:** v3. v2's holder was test-printed (2026-11-16): the Dragy fits; v3 moves the push-out hole. The cap is not yet printed. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v2, shaded renders](docs/render.png)
+![Dragy mount v3, shaded renders](docs/render.png)
 
 X-ray view (Blender, `render_xray.py`): the screws in their counterbores, the push-out hole, the cap's gasket and the tether hook, seen through the parts.
 
-![Dragy mount v2, X-ray view in the front swingarm's pad](docs/xray.png)
+![Dragy mount v3, X-ray view in the front swingarm's pad](docs/xray.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v2.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
-| USB-C cap (with its tether) | `dragy_usbc_cap_v2.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
-| Assembly | `dragy_assembly_v2.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v3.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
+| USB-C cap (with its tether) | `dragy_usbc_cap_v3.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
+| Assembly | `dragy_assembly_v3.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2/v3. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -89,7 +89,10 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] v1: a tray bolted onto the shoe (`shoe.py`, from shredlight-mounts r4), and the USB-C cap. Not printed.
 - [x] Measure the front swingarm's pad: 30° (nose up), 66.3 × 40.4 mm, rim 15.55 mm, M4 holes 39.5 mm apart, 4 mm threads
 - [x] v2: a holder in the front swingarm's pad, screwed into its two M4 holes, and the USB-C cap
-- [ ] Print v2: test-fit it in the pad, the Dragy in the holder, the cap on the holder, and a charging cable over the rim
+- [x] Print v2's holder (2026-11-16): prints without supports (after rooting the tether hook in the wall); the Dragy fits but
+  rattles left/right with the cap off; the centred push-out hole uncovered part of the white connector
+- [x] v3: the push-out hole 2 mm toward the nose, so the wall covers the white connector
+- [ ] Print v3 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim
 
 ## License
 

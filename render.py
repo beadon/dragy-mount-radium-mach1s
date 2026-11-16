@@ -70,7 +70,7 @@ def main():
     up = g.PAD_FRAME[:, 2]                           # out of the pad, for the exploded view
     lift = lambda m, k: m.translate(list(k * up))
     ims = [render([(cast, grey), (h, red), (c, amber), (d, blue)], -40, 35,
-                  "v2 in the front swingarm's pad (schematic casting): holder red, Dragy blue, USB-C cap amber"),
+                  f"v{g.VERSION} in the front swingarm's pad (schematic casting): holder red, Dragy blue, USB-C cap amber"),
            render([(cast, grey), (lift(sc, 25), dark), (lift(h, 25), red), (lift(d, 55), blue), (lift(c.translate([22, 0, 0]), 55), amber)],
                   -40, 30, "exploded: two M4x16 into the pad's threads; the Dragy slides in from the right; the cap closes that end"),
            render([(cast, grey), (h, red), (c, amber), (d, blue)], 90, 10, "from the rider's right (nose to the right): pad and holder at 30 deg"),

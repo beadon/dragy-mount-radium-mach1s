@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Dragy GPS laptimer holder for the Radium Mach One S front swingarm, plus a USB-C dust cap.
 
-v2 (2026-11-16): the holder sits in the recessed pad on top of the front swingarm, beyond the deck's
+v3 (2026-11-16): as v2, with the push-out hole 2 mm toward the nose. v2: the holder sits in the recessed pad on top of the front swingarm, beyond the deck's
 nose, and screws into the pad's two M4 threaded holes.
 (v1 bolted the tray onto the shoe in shoe.py; the shoe remains its own component.)
 
-Parts (not yet printed):
+Parts (v2's holder test-printed 2026-11-16; the cap not yet):
 
     holder   one piece: a base on the pad, with the plug, and on top of it a tray that holds the
              Dragy flat, logo up, parallel to the pad (30 deg, nose up). Two M4 x 16 socket-head screws go
@@ -32,7 +32,7 @@ from manifold3d import CrossSection, Manifold
 
 import shoe as s
 
-VERSION = 2
+VERSION = 3
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
