@@ -38,7 +38,10 @@ VERSION = 3
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
 PAD_W = 66.3         # flat area inside the rim, across the board (66.38 measured)
 PAD_L = 35.0 / np.cos(np.radians(PAD_TILT))   # along the slope: 35 measured level -> 40.4
-PAD_R = 8.0          # the pocket's corner radius (ESTIMATE from the photo)
+PAD_R = 8.0          # the pocket's TAIL-side corner radius (ESTIMATE from the photo)
+PAD_R_NOSE = 12.0    # its NOSE-side corners are rounder (ESTIMATE, from a top-down photo). v2's square-cornered
+                     # holder hit them (test print 2026-11-16), which this model does NOT reproduce: with a centred
+                     # oval hole it would need > 19.5 mm. Suspect the holes sit nose-ward of the pad's centre; measure.
 RIM_H = 15.55        # the rim stands this far above the pad
 M4_SPACING = 39.5    # the two M4 threaded holes, centre to centre, across the board, either side of the oval hole
 THREAD = 4.0         # the M4 threads are ~4 mm long, right through the casting
@@ -66,6 +69,10 @@ PUSH_Y = 2.0                  # moved toward the NOSE (+y) off centre so it cove
                               # which is off centre the other way (owner, test print 2026-11-16)
 
 # --- Holder ---
+TRAY_Y = -1.0        # the holder's body (and the Dragy and cap) sits this far toward the TAIL of the screws and
+                     # the oval hole: the screw holes are 1 mm toward the nose in the holder (test print 2026-11-16)
+NOSE_R = 8.0         # the holder's two nose-side corners (plan view) are rounded this much, to clear the pocket's
+                     # rounder nose-side corners
 FIT = 0.25           # clearance per side round the Dragy
 WALL = 2.4           # side walls
 END_WALL = 3.6       # far-end wall: thicker, as the screw's counterbore runs into it
@@ -96,6 +103,7 @@ PEG_Z = None                                    # the arm's root height (None: a
 
 # --- Cap (USB-C dust cover) ---
 CAP_WALL = 1.6
+CAP_WALL_R = CAP_WALL   # the cap's nose-side outer corner is rounded round its inside corner
 CAP_DEPTH = 7.0      # how far the cap's sleeve reaches over the tray's end
 CAP_FIT = 0.2        # clearance per side, sleeve over tray
 # A gasket ring on the end plate's inside presses on the Dragy's end face round the USB-C opening; nothing
@@ -163,13 +171,13 @@ def dragy():
     tongue_l = USB_DEPTH - TONGUE_RECESS
     body += Manifold.cube([tongue_l + 0.5, TONGUE_W, TONGUE_T]).translate(
         [DRAGY_L / 2 - USB_DEPTH - 0.5, USB_Y - TONGUE_W / 2, DRAGY_T / 2 - TONGUE_T / 2])
-    return body.translate([0, 0, FLOOR_TOP])
+    return body.translate([0, TRAY_Y, FLOOR_TOP])
 
 
 def usb_plug():
     """Room a charging cable's plug needs, straight out of the USB-C port (pad frame)."""
     w, h, l = USB_PLUG
-    return Manifold.cube([l, w, h]).translate([DRAGY_L / 2, USB_Y - w / 2, FLOOR_TOP + DRAGY_T / 2 - h / 2])
+    return Manifold.cube([l, w, h]).translate([DRAGY_L / 2, TRAY_Y + USB_Y - w / 2, FLOOR_TOP + DRAGY_T / 2 - h / 2])
 
 
 def screws():
@@ -230,9 +238,6 @@ def holder(grip=True):
     prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]]).translate([PUSH_Y, 0])
     rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
     h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
-    # Optional plug into the oval hole.
-    if PLUG:
-        h += hole_section().offset(-PLUG_CLR, circular_segments=64).extrude(PLUG_DEPTH + 0.5).translate([0, 0, -PLUG_DEPTH])
     # Grip bumps inside the side walls near the open end: GRIP - FIT (0.05 mm) of interference.
     for sy in ((1, -1) if grip else ()):
         bump = Manifold.cylinder(POCKET_H - 1, 1.5, circular_segments=24).scale([1, GRIP / 1.5, 1])
@@ -243,10 +248,16 @@ def holder(grip=True):
         h += Manifold.sphere(1.5, circular_segments=24).scale([1, CAP_SNAP / 1.5, 1]).translate(
             [X_OPEN - CAP_DEPTH / 2, sy * w2, SNAP_Z])
     h += tether_hook()
+    # Round the two nose-side (+y) corners in plan, then move the body TRAY_Y toward the tail of the screws.
+    h ^= nose_rounded(2 * BASE_X, -OUT_W, w2, NOSE_R).extrude(TOP + 1)
+    h = h.translate([0, TRAY_Y, 0])
     # The two M4 screws: clearance holes down to the pad, counterbores up from the head's seat.
     for sx in (1, -1):
         h -= s.rod(SEAT + 2, BOLT_HOLE, -1).translate([sx * M4_SPACING / 2, 0, 0])
         h -= s.rod(TOP, HEAD_BORE, SEAT).translate([sx * M4_SPACING / 2, 0, 0])
+    # Optional plug into the oval hole (centred on the hole, not the body).
+    if PLUG:
+        h += hole_section().offset(-PLUG_CLR, circular_segments=64).extrude(PLUG_DEPTH + 0.5).translate([0, 0, -PLUG_DEPTH])
     return h
 
 
@@ -285,14 +296,34 @@ def cap(squeeze=GASKET_SQUEEZE):
     ring = (Manifold.cylinder(TETHER_T, RING_OD / 2, circular_segments=48)
             - Manifold.cylinder(TETHER_T + 2, RING_ID / 2, circular_segments=32).translate([0, 0, -1]))
     c += ring.rotate([0, 90, 0]).translate([xs, y0 - TETHER_L, SNAP_Z])
-    return c
+    # Round its nose-side (+y) outer corner, round the inside corner, so the wall stays CAP_WALL thick.
+    xi, yi = X_OPEN, w2
+    corner = Manifold.cube([CAP_WALL + 1, CAP_WALL + 1, 80]).translate([xi, yi, -10])
+    keep = Manifold.cylinder(80, CAP_WALL_R, circular_segments=48).translate([xi, yi, -10])
+    c -= corner - keep
+    return c.translate([0, TRAY_Y, 0])
+
+
+def nose_rounded(l, y0, y1, r):
+    """Plan rectangle l across (centred on x = 0), from y0 to y1, its two +y corners rounded at r."""
+    parts = [CrossSection.square([l, 0.01]).translate([-l / 2, y0])]
+    parts += [CrossSection.circle(r, 64).translate([sx * (l / 2 - r), y1 - r]) for sx in (1, -1)]
+    return CrossSection.batch_hull(parts)
+
+
+def pad_outline():
+    """The pad's flat area in plan: PAD_W x PAD_L, tail corners PAD_R, nose corners PAD_R_NOSE."""
+    pts = []
+    for (sx, sy, r) in ((1, 1, PAD_R_NOSE), (-1, 1, PAD_R_NOSE), (-1, -1, PAD_R), (1, -1, PAD_R)):
+        pts.append(CrossSection.circle(r, 96).translate([sx * (PAD_W / 2 - r), sy * (PAD_L / 2 - r)]))
+    return CrossSection.batch_hull(pts)
 
 
 def casting():
     """The swingarm round the pad (pad frame): the pocket (rim RIM_H high), the oval hole, the M4 holes.
     Only the pocket and the holes are measured; the block round them is a placeholder."""
     block = Manifold.cube([PAD_W + 30, PAD_L + 30, RIM_H + 12]).translate([-(PAD_W + 30) / 2, -(PAD_L + 30) / 2, -12])
-    pocket = rounded_rect(PAD_W, PAD_L, PAD_R).extrude(RIM_H + 1)
+    pocket = pad_outline().extrude(RIM_H + 1)
     hole = hole_section().extrude(HOLE_D + 1).translate([0, 0, -HOLE_D])
     threads = Manifold()
     for sx in (1, -1):

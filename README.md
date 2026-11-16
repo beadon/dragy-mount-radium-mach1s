@@ -81,7 +81,7 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 ## Not yet known
 
 - The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's exact position (the push-out hole was moved 2 mm toward the nose after the first test print, to keep it off the connector).
-- The pad pocket's corner radius (assumed 8 mm) and the size of a charging plug's moulding (assumed
+- Where the M4 holes sit along the pad (assumed centred; v2 hit the nose-side corners, so they may be nose-ward) and the pocket's corner radii (assumed 12 mm at the nose, 8 mm at the tail) and the size of a charging plug's moulding (assumed
   13 × 7.5 mm, 30 mm long) for the rim-clearance check.
 
 ## Roadmap
@@ -92,6 +92,9 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] Print v2's holder (2026-11-16): prints without supports (after rooting the tether hook in the wall); the Dragy fits but
   rattles left/right with the cap off; the centred push-out hole uncovered part of the white connector
 - [x] v3: the push-out hole 2 mm toward the nose, so the wall covers the white connector
+- [x] v2 in the pad (2026-11-16): its nose-side corners hit the pocket's rounded corners (the model's pad doesn't show this)
+- [x] v3: the holder's body 1 mm toward the tail of the screws (`TRAY_Y`), its nose-side corners rounded 8 mm (`NOSE_R`)
+- [ ] Measure where the M4 holes sit along the pad (to its nose- and tail-side walls) and the pocket's nose corner radius
 - [ ] Print v3 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim
 
 ## License

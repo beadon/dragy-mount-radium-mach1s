@@ -63,7 +63,9 @@ Assumed / unknown:
   lip is at its front, higher end); flat area 66.3 across × 35 measured level (40.4 along the slope);
   rim 15.55 above it; M4 threaded holes 39.5 apart across the board (an earlier 37.56 was a bad caliper
   reading), threads ~4 mm, right through; oval hole 16 × 17, centred. Nothing comes near when leaning.
-  The pocket's corner radius is assumed (8 mm).
+  The pocket's corner radius is assumed (8 mm tail side, 12 mm nose side). v2's holder hit the nose-side corners
+  (test print 2026-11-16) though the model said it fit: the holes' position along the pad is suspect. v3 moves the
+  holder 1 mm toward the tail of the screws (`TRAY_Y`) and rounds its nose-side corners (`NOSE_R`).
 - Dragy: USB-C on its end face, long side across the 27 mm width, its case cut-out 6.91 from one side wall
   and 10.21 from the other (measured, ~0.1 slop): centre 1.65 off centre, toward the TAIL with the logo up and
   the USB-C end on the rider's right (owner, `USB_SIDE = -1`). Mid-height assumed. 4 mm plan corner radius; bottom edges rounded 2 mm, top edges sharp (owner). The far wall has an 8 mm push-out hole,
