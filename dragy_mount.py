@@ -72,7 +72,7 @@ PUSH_Y = 2.0                  # moved toward the NOSE (+y) off centre so it cove
                               # which is off centre the other way (owner, test print 2026-11-16)
 
 # --- Holder ---
-TRAY_Y = -3.6        # the holder's body (and the Dragy and cap) sits this far toward the TAIL of the screws and
+TRAY_Y = -3.6        # the holder's body (and the Dragy and gate) sits this far toward the TAIL of the screws and
                      # the oval hole. v2 (0) hit the pocket's nose end; v3 (-1) fitted but rested with its holes about
                      # half a screw width (~2 mm) tail-ward of the pad's (test prints 2026-11-16). At -3 the body would
                      # sit where v3's rested, against the nose end; -3.6 leaves ~1 mm there (with 1.3 mm walls, NOSE_R 6).
@@ -205,7 +205,7 @@ def holder(grip=True):
     outer += posts.extrude(TOP)
     mouth = Manifold.cube([X_POST - X_OPEN + 3, POCKET_W, TOP]).translate([X_OPEN - 1.3, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
-    # Round the two nose-side (+y) corners in plan (before the snap bumps go on: v3 clipped the nose-side one off).
+    # Round the two nose-side (+y) corners in plan (add anything that sticks out of a wall after this: v3 lost a snap bump).
     h ^= (nose_rounded(2 * BASE_X, -POST_W2, w2, NOSE_R) + posts).extrude(TOP + 1)
     h -= grooves()
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
