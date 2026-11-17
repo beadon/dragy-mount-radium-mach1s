@@ -108,6 +108,13 @@ PRELOAD = 0.4        # the pads reach this far into the Dragy's end face with th
 PAD_Y = (7.3, -8.3)  # the pads' centres along y (Dragy-centred): clear of the USB-C cut-out, which runs
                      # from -6.57 to 3.27, and of the end face's rounded corners (|y| > 9.48)
 PAD_W = 1.6          # each pad's width along y
+# Click: a small ridge on the outer face of each of the plate's edges, near the bottom, drops into a notch in
+# the groove's outer wall. The pads' spring pushes the plate outward, so it holds the ridge in the notch;
+# lifting the gate means pushing the ridge back out against it (owner, 2026-11-17: so it can't vibrate out).
+CLICK_H = 0.3        # the ridge's height (the grooves' play is 2 x GATE_CLR = 0.4, so it slides down past the wall)
+CLICK_Z = 2.0        # its tip's height above the shelf
+CLICK_UP = 30.0      # its top face, from the wall (deg): shallow, so a pull lifts it out; 45 deg underneath leads it in
+CLICK_CLR = 0.1      # the notch is this much bigger all round
 PAD_Z = (3.0, DRAGY_T - 2.0)   # pads' height above the floor (clear of the Dragy's rounded bottom edges)
 
 SEAT = SCREW_LEN - THREAD                    # the screws' heads seat this high above the pad
@@ -210,6 +217,7 @@ def holder(grip=True):
     # Round the two nose-side (+y) corners in plan (add anything that sticks out of a wall after this: v3 lost a snap bump).
     h ^= (nose_rounded(2 * BASE_X, -POST_W2, w2, NOSE_R) + posts).extrude(TOP + 1)
     h -= grooves()
+    h -= click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR)   # the notches, for the plate pushed out
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
     # Centred on the Dragy's mid-height, PUSH_Y toward the nose; the point stays well under the lip.
     tall = PUSH_H + PUSH_W / 2
@@ -270,11 +278,31 @@ def pads():
     return m
 
 
+def click_section(grow=0.0):
+    """The click's ridge in section (x out from the plate's outer face, z), tip at (CLICK_H, CLICK_Z above the shelf)."""
+    zc, up = FLOOR_TOP + CLICK_Z, CLICK_H / np.tan(np.radians(CLICK_UP))
+    tri = CrossSection([[(-0.01, zc - CLICK_H), (CLICK_H, zc), (-0.01, zc + up)]])
+    return tri.offset(grow, circular_segments=16) if grow else tri
+
+
+def click(x0, grow=0.0, extra=0.0):
+    """The ridge (or, grown, its notch) along both of the plate's edges inside the grooves, with the plate's
+    outer face at x0 (holder's frame, before TRAY_Y)."""
+    rot = np.array([[1.0, 0, 0], [0, 0, 1.0], [0, 1.0, 0]])   # section (x, z), extruded along y
+    y0, y1 = POCKET_W / 2 + 0.1 - extra, POCKET_W / 2 + GROOVE_D + extra
+    m = Manifold()
+    for sy in (1, -1):
+        r = s.place(click_section(grow).extrude(y1 - y0), rot, [x0, y0, 0])
+        m += r if sy > 0 else r.mirror([0, 1, 0])
+    return m
+
+
 def gate(with_pads=True):
     """The plate that closes the open end, with its pads (pad frame)."""
     y2 = POCKET_W / 2 + GROOVE_D
     g = Manifold.cube([GATE_T, 2 * y2, TOP + GATE_TAB - FLOOR_TOP]).translate([X_GATE, -y2, FLOOR_TOP])
     g += Manifold.cube([GATE_T + RIDGE_D, 2 * y2, RIDGE_H]).translate([X_GATE, -y2, TOP + GATE_TAB - RIDGE_H])
+    g += click(X_GATE + GATE_T)
     if with_pads:
         g += pads()
     return g.translate([0, TRAY_Y, 0])
@@ -346,11 +374,16 @@ def main():
         "screws clear of holder and Dragy (heads seated)": all((sc ^ m).volume() < 0.01 for m in (h, d)),
         "screws end flush with the casting's underside": abs(SEAT - SCREW_LEN + THREAD) < 1e-9,
         "gate clear of the holder": (gt ^ h).volume() < 0.01,
-        "gate lifts straight up out of the holder": (lift(gt) ^ h).volume() < 0.01,
+        "gate lifts straight up out, its clicks pushed back into the grooves' play": (lift(gt.translate([-0.15, 0, 0])) ^ h).volume() < 0.01,
+        "...but not while the spring holds it out against the grooves (the clicks hold)": (lift(gt.translate([GATE_CLR, 0, 0])) ^ h).volume() > 0.5,
+        "gate clear of the holder, pushed out against the grooves": (gt.translate([GATE_CLR, 0, 0]) ^ h).volume() < 0.01,
+        "the clicks fit inside the grooves' play (they can slide down past the walls)": CLICK_H + 0.05 <= 2 * GATE_CLR,
         "gate clear of the screws": (gt ^ sc).volume() < 0.01,
         "the ridge's underside clears the posts' tops (seated)": TOP + GATE_TAB - RIDGE_H >= TOP + 0.5,
         "the ridge stays inside the posts' ends": X_GATE + GATE_T + RIDGE_D <= X_POST,
-        "both grooves have a full-height lip behind the plate": all((lip_box(sy) - h).volume() < 0.01 for sy in (1, -1)),
+        "both grooves have a full-height lip behind the plate (bar the click's notch)": all(
+            (lip_box(sy) - h - click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR).translate([0, TRAY_Y, 0])).volume() < 0.01
+            for sy in (1, -1)),
         "the pads press PRELOAD into the Dragy (against the far wall)": (gt ^ d_back).volume() > 0.5
             and (gt ^ d_back.translate([-PRELOAD - 0.01, 0, 0])).volume() < 0.01,
         "only the pads touch the Dragy, even pushed out to the open end": (gate(with_pads=False) ^ d.translate([FIT, 0, 0])).volume() < 0.01,
@@ -370,6 +403,9 @@ def main():
     print(f"holder {h.volume() / 1000:.1f} cm^3, gate {gt.volume() / 1000:.2f} cm^3; room to the pocket's side "
           f"{room(h, pocket_plan):.2f} mm (holder); the Dragy's top is {FLOOR_TOP + DRAGY_T - RIM_H:.1f} mm above the rim")
     print(f"gate spring (estimate): {f0:.1f}-{f1:.1f} N per pad, strain {e0:.2f}-{e1:.2f} % (pads pushed {PRELOAD}-{PRELOAD + 2 * FIT:.1f} mm)")
+    al, mu = np.radians(CLICK_UP), 0.3      # each groove carries one pad's push; PLA on PLA, friction ~0.3
+    k = (np.sin(al) + mu * np.cos(al)) / (np.cos(al) - mu * np.sin(al))
+    print(f"lifting the gate out past its clicks (estimate): {2 * k * f0:.0f}-{2 * k * f1:.0f} N in all")
     s.write_stl(s.face_down(h, [0, 0, -1.0]), out / f"dragy_holder_v{VERSION}.stl")   # floor down: no supports
     s.write_stl(s.face_down(gt, [0, 0, 1.0]), out / f"dragy_gate_v{VERSION}.stl")     # upside down, on its ridge
     colours = {"truck": (0.55, 0.55, 0.58), "tray": (0.80, 0.15, 0.12), "gate": (0.95, 0.65, 0.10),

@@ -54,7 +54,9 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   with it against the far wall, 0.9 mm with it pushed out (estimate: 3.4-7.6 N per pad, 0.3-0.6 % strain,
   well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
   top edge and push it back. Catch a fingernail under the ridge along its top (square underside) and lift the gate out to charge
-  (it needs ~20 mm of room above the holder). The spring force holds it in its grooves.
+  (it needs ~20 mm of room above the holder). It **clicks** in: a 0.3 mm ridge near the bottom of each of its edges
+  drops into a notch in its groove, and the plate's own spring holds it there, so it can't vibrate out. The ridge's
+  top is a shallow 30°, so a firm pull lifts it out (estimate: ~7-16 N).
 - **The pocket's sides run straight out of the open end** (v5): in v2-v4 its rounded plan corners narrowed
   the way out by ~1 mm each side, so the Dragy only got in by bending the walls.
 - **The USB-C port is off centre** (measured): its case cut-out is 6.91 mm from one side wall and 10.21 mm
@@ -107,7 +109,8 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] v5: the cap and tether replaced by a PLA gate in grooves past the open end; the plate is a bow spring whose two
   pads hold the Dragy against the far wall. The pocket's sides run straight out of the open end (its rounded
   corners narrowed the way out ~1 mm each side). The gate prints flat, the holder floor down, no supports
-- [ ] Print v5: does the gate stop the rattle, slide in and out easily, and stay put on the road? Does a charging cable
+- [x] v5: a fingernail ridge along the gate's top; a click (ridge and notch) at the bottom of each groove
+- [ ] Print v5: does the gate stop the rattle, click in, lift out with a fingernail, and stay put on the road? Does a charging cable
   reach over the rim with the gate out?
 
 ## License
