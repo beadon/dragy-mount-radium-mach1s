@@ -21,7 +21,7 @@ copies in step** (and say so in both READMEs).
   `head_seat(L)` gives the counterbore floor for an M4 × L bolt). Also shared helpers (`place`,
   `along`, `rod`, `nut_pocket`, `face_down`, `write_stl`, `write_obj`, `check_mesh`, `min_gap_ok`) and
   `surroundings()`, a rough model of the rear truck round hole A.
-- `dragy_mount.py`: the holder and the USB-C cap, built in the PAD frame (x across, y up the pad's
+- `dragy_mount.py`: the holder and its gate (v5; v2-v4 had a TPU USB-C cap), built in the PAD frame (x across, y up the pad's
   slope toward the nose, z out of the pad; `PAD_FRAME` places them in the world), the schematic pad
   (`casting()`), the fit checks, and the outputs in `out/`.
 - `render.py`: shaded PNG renders (no 3D viewer needed) to `docs/render.png`.
@@ -66,6 +66,8 @@ Assumed / unknown:
   (`HOLES_NOSEWARD`, an estimate; v3 rested with its holes ~2 mm tail-ward of the pad's). v4 puts the holder's body
   3.6 mm tail-ward of the screws (`TRAY_Y`) with slotted holes (`SLOT`, ±1 mm), and rounds its nose-side corners
   (`NOSE_R`). Anything that sticks out of a wall must be added after the corner rounding (v3 lost a snap bump that way).
+  The pocket's nose end leaves little room past the holder's open end on its nose side: v5's gate posts (2.5 mm)
+  fit with 1.4 mm to spare in the model; a zig-zag spring there (~6 mm) would not.
 - Dragy: USB-C on its end face, long side across the 27 mm width, its case cut-out 6.91 from one side wall
   and 10.21 from the other (measured, ~0.1 slop): centre 1.65 off centre, toward the TAIL with the logo up and
   the USB-C end on the rider's right (owner, `USB_SIDE = -1`). Mid-height assumed. 4 mm plan corner radius; bottom edges rounded 2 mm, top edges sharp (owner). The far wall has an 8 mm push-out hole,
@@ -73,10 +75,10 @@ Assumed / unknown:
   connector, which is off centre toward the tail), with a 45° pointed top (a flat-topped window was a bridge the screw counterbore broke up; a 45° ramp through
   the wall's thickness still left a 16 mm span; its cutter also clipped the lip, leaving a floating sliver).
 - USB-C receptacle opening 8.34 × 2.56 mm, ~6.2 mm deep (USB Type-C spec / maker drawings).
-  Its centre tongue (contacts on both faces) is about 6.69 wide × 0.7 thick; the cap's nub is a sleeve
-  slotted 7.0 × 1.0 to clear it (owner's catch, 2026-11-16: a solid nub would hit the tongue). With ~0.1 mm
-  measurement slop that clearance (~0.15) was too tight, so v2 dropped the nub for a gasket ring that presses
-  on the end face round the opening; nothing enters the socket.
+  Its centre tongue (contacts on both faces) is about 6.69 wide × 0.7 thick, so nothing should enter the socket
+  (a nub would clear the tongue by ~0.15 mm, under the measurements' slop). v2-v4's TPU cap pressed a gasket ring
+  round the opening; it came off too easily (v4 print, 2026-11-17), so v5 closes the end with a PLA gate whose
+  pads press on the end face beside the opening.
 
 ## How the owner likes to work
 

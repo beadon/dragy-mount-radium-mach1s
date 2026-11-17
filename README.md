@@ -1,27 +1,28 @@
 # Dragy mount for the Radium Mach One S
 
 A 3D-printable holder for a **Dragy GPS laptimer** on a Radium Mach One S electric skateboard,
-plus a **USB-C dust cover** for the Dragy's charging port.
+closed at its USB-C end by a sprung **gate** that stops the Dragy rattling and covers the charging port.
 
 The holder sits in the recessed pad on top of the **front swingarm**, beyond the deck's nose, where
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v4 holder printed (2026-11-16): it prints cleanly and fits the pad snugly. The TPU cap is next; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+**Status:** v5, not yet printed. The v4 holder (2026-11-16) prints cleanly and fits the pad snugly; v4's TPU cap came
+off too easily, so v5 replaces it with a PLA gate; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v4, shaded renders](docs/render.png)
+![Dragy mount v5, shaded renders](docs/render.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v4.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
-| USB-C cap (with its tether) | `dragy_usbc_cap_v4.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
-| Assembly | `dragy_assembly_v4.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2-v4. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v5.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
+| Gate | `dragy_gate_v5.stl` | Flat, outer face down, pads up. No supports. **PLA** (PETG if it relaxes in the heat): it's the spring. |
+| Assembly | `dragy_assembly_v5.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2-v5. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -45,14 +46,17 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   screw heads sit under the Dragy: slide it out to reach them.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
   USB-C port's centre 7.8 mm above it, so a charging cable plugs straight in from the right, over the rim.
-- **The cap** slips over the holder's open end, sitting on the base's shelf, and clicks onto two
-  bumps on the tray's sides. It holds the Dragy in. Inside, a soft **gasket ring** presses on the
-  Dragy's end face round the USB-C opening (pushing the Dragy back against the far wall); nothing goes
-  into the socket, so its contacts and centre tongue are never touched, and a millimetre of error in
-  the port's position doesn't matter. A **tether** strap, printed flat with the cap, ends in a ring that
-  hooks onto the holder's tail-side wall, so the cap can't be lost: an arm rises out of the wall at
-  45°, and its tip flares wider than the ring's hole, so the TPU ring stretches over the tip, relaxes
-  onto the arm, and has to stretch again to come off. Pull the cap off to charge.
+- **The gate** closes the USB-C end. Past the open end, the side walls run on 2.5 mm as posts, each
+  with a vertical groove; the gate, a 0.86 mm (2-line) PLA plate, drops into them from above and stands
+  on the base's shelf. **The plate is the spring:** two pads on its inside press on the Dragy's end face
+  either side of the USB-C opening (nothing touches the port), so the plate bows between its grooves and
+  holds the Dragy against the far wall: no rattle along its length. The pads reach 0.4 mm into the Dragy
+  with it against the far wall, 0.9 mm with it pushed out (estimate: 3.4-7.6 N per pad, 0.3-0.6 % strain,
+  well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
+  top edge and push it back. Pinch the tab above the holder's top and lift the gate out to charge
+  (it needs ~20 mm of room above the holder). The spring force holds it in its grooves.
+- **The pocket's sides run straight out of the open end** (v5): in v2-v4 its rounded plan corners narrowed
+  the way out by ~1 mm each side, so the Dragy only got in by bending the walls.
 - **The USB-C port is off centre** (measured): its case cut-out is 6.91 mm from one side wall and 10.21 mm
   from the other, so its centre is 1.65 mm off the Dragy's centreline. With the logo up and the USB-C end
   on the rider's right, it's toward the **tail** (`USB_SIDE` in `dragy_mount.py`).
@@ -64,7 +68,7 @@ Hardware: two M4×16 socket-head screws. A drop of removable threadlocker keeps 
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/python dragy_mount.py out   # holder and cap STLs and the assembly OBJ (runs every fit check)
+.venv/bin/python dragy_mount.py out   # holder and gate STLs and the assembly OBJ (runs every fit check)
 .venv/bin/python shoe.py out          # the shoe on its own
 .venv/bin/python render.py            # docs/render.png
 ```
@@ -75,7 +79,7 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 
 ## Not yet known
 
-- The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's exact position (the push-out hole was moved 2 mm toward the nose after the first test print, to keep it off the connector).
+- The USB-C port's height on the Dragy's end face (assumed mid-height); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's exact position (the push-out hole was moved 2 mm toward the nose after the first test print, to keep it off the connector).
 - Where the M4 holes sit along the pad (fitted to the test prints: 6.2 mm nose-ward of the pocket's centre) and the pocket's corner radii (nose end nearly a semicircle, ~20 mm; tail 8 mm assumed) and the size of a charging plug's moulding (assumed
   13 × 7.5 mm, 30 mm long) for the rim-clearance check.
 
@@ -98,7 +102,13 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   restored (and a check for both); the pad model refitted (nose end R20, holes 6.2 mm nose-ward)
 - [ ] Measure where the M4 holes sit along the pad (centre to the nose-side and tail-side walls)
 - [x] Print v4's holder (2026-11-16): prints cleanly and fits the pad snugly
-- [ ] Print the v4 TPU cap: the cap on the holder (does it stop the rattle?), the tether's clearance, and a charging cable over the rim
+- [x] Print v4's TPU cap (2026-11-17): it came off too easily (its snap bumps engaged ~0.3 mm), and the tether's ring
+  was hard to get onto the hook (at 45° the ring's top edge met the wall before it reached the straight arm)
+- [x] v5: the cap and tether replaced by a PLA gate in grooves past the open end; the plate is a bow spring whose two
+  pads hold the Dragy against the far wall. The pocket's sides run straight out of the open end (its rounded
+  corners narrowed the way out ~1 mm each side). The gate prints flat, the holder floor down, no supports
+- [ ] Print v5: does the gate stop the rattle, slide in and out easily, and stay put on the road? Does a charging cable
+  reach over the rim with the gate out?
 
 ## License
 

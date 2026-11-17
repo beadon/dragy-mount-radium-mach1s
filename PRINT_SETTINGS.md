@@ -6,7 +6,7 @@ with the profile below. The support settings matter most: they're tuned so suppo
 ## Profile
 
 Based on the system profile **0.20mm SPEED @MK4IS 0.4**, saved as a copy, with filament **Generic PLA**
-(TPU for the USB-C cap).
+(v2-v4's USB-C cap was TPU; v5's gate is PLA).
 
 | Setting | Value |
 |---|---|
@@ -48,12 +48,13 @@ pockets and slots that would be hard to clear.
 
 ## Per part
 
-- **Holder** (`dragy_holder_v4.stl`): floor down. Supports off: nothing overhangs. The lips' undersides
-  are 45°, the screw counterbores are vertical, the far-end push-out hole has a 45° pointed top, and the
-  tether's hook rises out of the wall at 45°. (Don't print it on its side: the cap's snap bumps would overhang.)
+- **Holder** (`dragy_holder_v5.stl`): floor down. Supports off: nothing overhangs. The lips' undersides
+  are 45°, the screw counterbores and the gate's grooves are vertical, and the far-end push-out hole has a
+  45° pointed top.
 - If the slicer still adds supports, it's because "Support on build plate only" is on with auto supports:
   turn supports off for this part.
-- **USB-C cap** (`dragy_usbc_cap_v4.stl`): end plate down, gasket up, the tether flat on the bed. TPU
-  (e.g. a 95A TPU profile, slow), supports off.
-- **Shoe** (`shoe.stl`, not used by v2-v4): as exported, top face down, plug up. Supports off: with them on,
+- **Gate** (`dragy_gate_v5.stl`): flat, outer face down, the two pads up. Supports off. PLA, the same profile;
+  the 0.86 mm plate is exactly 2 perimeters (no infill), and it's the spring, so don't thicken it. If PLA relaxes
+  in a hot pocket over time, print it in PETG.
+- **Shoe** (`shoe.stl`, not used by v2-v5): as exported, top face down, plug up. Supports off: with them on,
   build-plate-only supports can reach into the side-opening nut slots.

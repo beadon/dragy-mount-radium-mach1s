@@ -65,16 +65,16 @@ def render(objs, az, el, title, W=700, H=560):
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else "docs/render.png"
     w = g.to_world
-    cast, h, c, d, sc = w(g.casting()), w(g.holder()), w(g.cap()), w(g.dragy()), w(g.screws())
+    cast, h, gt, d, sc = w(g.casting()), w(g.holder()), w(g.gate()), w(g.dragy().translate([-g.FIT, 0, 0])), w(g.screws())
     grey, red, amber, blue, dark = (170, 170, 175), (205, 50, 40), (240, 170, 30), (60, 110, 210), (40, 40, 40)
     up = g.PAD_FRAME[:, 2]                           # out of the pad, for the exploded view
     lift = lambda m, k: m.translate(list(k * up))
-    ims = [render([(cast, grey), (h, red), (c, amber), (d, blue)], -40, 35,
-                  f"v{g.VERSION} in the front swingarm's pad (schematic casting): holder red, Dragy blue, USB-C cap amber"),
-           render([(cast, grey), (lift(sc, 25), dark), (lift(h, 25), red), (lift(d, 55), blue), (lift(c.translate([22, 0, 0]), 55), amber)],
-                  -40, 30, "exploded: two M4x16 into the pad's threads; the Dragy slides in from the right; the cap closes that end"),
-           render([(cast, grey), (h, red), (c, amber), (d, blue)], 90, 10, "from the rider's right (nose to the right): pad and holder at 30 deg"),
-           render([(h, red), (c.translate([12, 0, 0]), amber), (sc, dark)], 60, 40, "holder, screws and cap (cap pulled off)")]
+    ims = [render([(cast, grey), (h, red), (gt, amber), (d, blue)], -40, 35,
+                  f"v{g.VERSION} in the front swingarm's pad (schematic casting): holder red, Dragy blue, gate amber"),
+           render([(cast, grey), (lift(sc, 25), dark), (lift(h, 25), red), (lift(d, 55), blue), (lift(gt, 75), amber)],
+                  -40, 30, "exploded: two M4x16 into the pad's threads; the Dragy slides in from the right; the gate drops in"),
+           render([(cast, grey), (h, red), (gt, amber), (d, blue)], 90, 10, "from the rider's right (nose to the right): pad and holder at 30 deg"),
+           render([(h, red), (lift(gt, 22), amber), (d, blue)], 120, 30, "the USB-C end: the gate lifted out of its grooves (pads on its inside)")]
     W, H = ims[0].size
     sheet = Image.new("RGB", (2 * W, 2 * H), "white")
     for i, im in enumerate(ims):
