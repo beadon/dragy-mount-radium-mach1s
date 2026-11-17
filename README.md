@@ -7,7 +7,7 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v4, not yet printed. v2 and v3 holders were test-printed (2026-11-16): the Dragy fits; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+**Status:** v4 holder printed (2026-11-16): it prints cleanly and fits the pad snugly. The TPU cap is next; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
@@ -97,7 +97,8 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   end), nose-side corners R6; the snap bump
   restored (and a check for both); the pad model refitted (nose end R20, holes 6.2 mm nose-ward)
 - [ ] Measure where the M4 holes sit along the pad (centre to the nose-side and tail-side walls)
-- [ ] Print v4 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim
+- [x] Print v4's holder (2026-11-16): prints cleanly and fits the pad snugly
+- [ ] Print the v4 TPU cap: the cap on the holder (does it stop the rattle?), the tether's clearance, and a charging cable over the rim
 
 ## License
 
