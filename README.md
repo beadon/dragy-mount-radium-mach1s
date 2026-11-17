@@ -93,7 +93,8 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   (the pocket's nose end is nearly a semicircle and the holes sit nose-ward of its centre); the nose-side snap bump
   for the cap was missing (cut off by v3's corner rounding)
 - [x] v4: the screw holes 2.6 mm further toward the nose (`TRAY_Y` -3.6) and slotted ±1 mm along the board (`SLOT`);
-  side walls 2.4 → 1.8 mm (the holder is 31.1 mm along the board, was 32.3), nose-side corners R6; the snap bump
+  side walls 2.4 → 1.3 mm, 3 lines (the holder is 30.1 mm along the board, was 32.3; ~1 mm off the pocket's nose
+  end), nose-side corners R6; the snap bump
   restored (and a check for both); the pad model refitted (nose end R20, holes 6.2 mm nose-ward)
 - [ ] Measure where the M4 holes sit along the pad (centre to the nose-side and tail-side walls)
 - [ ] Print v4 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim

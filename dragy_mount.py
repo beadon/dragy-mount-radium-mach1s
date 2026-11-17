@@ -73,12 +73,12 @@ PUSH_Y = 2.0                  # moved toward the NOSE (+y) off centre so it cove
 TRAY_Y = -3.6        # the holder's body (and the Dragy and cap) sits this far toward the TAIL of the screws and
                      # the oval hole. v2 (0) hit the pocket's nose end; v3 (-1) fitted but rested with its holes about
                      # half a screw width (~2 mm) tail-ward of the pad's (test prints 2026-11-16). At -3 the body would
-                     # sit where v3's rested, against the nose end; -3.6 leaves ~0.5 mm there (with 1.8 mm walls, NOSE_R 6).
+                     # sit where v3's rested, against the nose end; -3.6 leaves ~1 mm there (with 1.3 mm walls, NOSE_R 6).
 SLOT = 1.0           # the screw holes are slots, this far each way along the board (the 2 mm above is an estimate)
 NOSE_R = 6.0         # the holder's two nose-side corners (plan view) are rounded this much, to clear the pocket's
                      # rounder nose-side corners
 FIT = 0.25           # clearance per side round the Dragy
-WALL = 1.8           # side walls (2.4 to v4's first cut: stiffer than needed, owner 2026-11-16)
+WALL = 1.3           # side walls: 3 clean lines at 0.45 mm (was 2.4, then 1.8: stiffer than needed, owner 2026-11-16)
 END_WALL = 3.6       # far-end wall: thicker, as the screw's counterbore runs into it
 LIP = 1.2            # top lips over the Dragy's edges (45 deg underneath, so they print without supports)
 TOP_CLEAR = 0.3      # gap over the Dragy's top, under the lips
