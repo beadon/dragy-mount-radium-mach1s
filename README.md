@@ -7,21 +7,21 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v3. v2's holder was test-printed (2026-11-16): the Dragy fits; v3 moves the push-out hole. The cap is not yet printed. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+**Status:** v4, not yet printed. v2 and v3 holders were test-printed (2026-11-16): the Dragy fits; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v3, shaded renders](docs/render.png)
+![Dragy mount v4, shaded renders](docs/render.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v3.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
-| USB-C cap (with its tether) | `dragy_usbc_cap_v3.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
-| Assembly | `dragy_assembly_v3.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2/v3. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v4.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, a tether hook that rises out of the wall at 45°). |
+| USB-C cap (with its tether) | `dragy_usbc_cap_v4.stl` | End plate down, gasket up, the tether flat on the bed. **TPU**: the gasket must squash and the tether bend. |
+| Assembly | `dragy_assembly_v4.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2-v4. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -76,7 +76,7 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 ## Not yet known
 
 - The USB-C port's height on the Dragy's end face (assumed mid-height; the gasket tolerates ~1 mm); the Dragy's plan-view corner radius (assumed 4 mm); and the white connector's exact position (the push-out hole was moved 2 mm toward the nose after the first test print, to keep it off the connector).
-- Where the M4 holes sit along the pad (assumed centred; v2 hit the nose-side corners, so they may be nose-ward) and the pocket's corner radii (assumed 12 mm at the nose, 8 mm at the tail) and the size of a charging plug's moulding (assumed
+- Where the M4 holes sit along the pad (fitted to the test prints: 6.2 mm nose-ward of the pocket's centre) and the pocket's corner radii (nose end nearly a semicircle, ~20 mm; tail 8 mm assumed) and the size of a charging plug's moulding (assumed
   13 × 7.5 mm, 30 mm long) for the rim-clearance check.
 
 ## Roadmap
@@ -89,8 +89,14 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] v3: the push-out hole 2 mm toward the nose, so the wall covers the white connector
 - [x] v2 in the pad (2026-11-16): its nose-side corners hit the pocket's rounded corners (the model's pad doesn't show this)
 - [x] v3: the holder's body 1 mm toward the tail of the screws (`TRAY_Y`), its nose-side corners rounded 8 mm (`NOSE_R`)
-- [ ] Measure where the M4 holes sit along the pad (to its nose- and tail-side walls) and the pocket's nose corner radius
-- [ ] Print v3 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim
+- [x] Print v3 (2026-11-16): fits the pocket, but its holes rest about half a screw width (~2 mm) tail-ward of the pad's
+  (the pocket's nose end is nearly a semicircle and the holes sit nose-ward of its centre); the nose-side snap bump
+  for the cap was missing (cut off by v3's corner rounding)
+- [x] v4: the screw holes 2.6 mm further toward the nose (`TRAY_Y` -3.6) and slotted ±1 mm along the board (`SLOT`);
+  side walls 2.4 → 1.8 mm (the holder is 31.1 mm along the board, was 32.3), nose-side corners R6; the snap bump
+  restored (and a check for both); the pad model refitted (nose end R20, holes 6.2 mm nose-ward)
+- [ ] Measure where the M4 holes sit along the pad (centre to the nose-side and tail-side walls)
+- [ ] Print v4 and the TPU cap: test-fit in the pad, the cap on the holder (does it stop the rattle?), and a charging cable over the rim
 
 ## License
 

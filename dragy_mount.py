@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Dragy GPS laptimer holder for the Radium Mach One S front swingarm, plus a USB-C dust cap.
 
-v3 (2026-11-16): as v2, with the push-out hole 2 mm toward the nose. v2: the holder sits in the recessed pad on top of the front swingarm, beyond the deck's
+v4 (2026-11-16): v2 refitted after test prints (holes, corners, push-out hole, tether). v2: the holder sits in the recessed pad on top of the front swingarm, beyond the deck's
 nose, and screws into the pad's two M4 threaded holes.
 (v1 bolted the tray onto the shoe in shoe.py; the shoe remains its own component.)
 
@@ -32,16 +32,17 @@ from manifold3d import CrossSection, Manifold
 
 import shoe as s
 
-VERSION = 3
+VERSION = 4
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
 PAD_W = 66.3         # flat area inside the rim, across the board (66.38 measured)
 PAD_L = 35.0 / np.cos(np.radians(PAD_TILT))   # along the slope: 35 measured level -> 40.4
 PAD_R = 8.0          # the pocket's TAIL-side corner radius (ESTIMATE from the photo)
-PAD_R_NOSE = 12.0    # its NOSE-side corners are rounder (ESTIMATE, from a top-down photo). v2's square-cornered
-                     # holder hit them (test print 2026-11-16), which this model does NOT reproduce: with a centred
-                     # oval hole it would need > 19.5 mm. Suspect the holes sit nose-ward of the pad's centre; measure.
+PAD_R_NOSE = 20.0    # its NOSE end is nearly a semicircle (photo from the tail, 2026-11-16): corners ~20 (ESTIMATE)
+HOLES_NOSEWARD = 6.2 # the M4 holes (and the oval hole) sit this far toward the nose of the pocket's centre. ESTIMATE,
+                     # fitted to the test prints: v3 (TRAY_Y -1) fits with its holes aligned only up to 4.2 here, and
+                     # rested ~2 mm short of aligned. Measure: M4 hole centre to the nose-side and tail-side walls.
 RIM_H = 15.55        # the rim stands this far above the pad
 M4_SPACING = 39.5    # the two M4 threaded holes, centre to centre, across the board, either side of the oval hole
 THREAD = 4.0         # the M4 threads are ~4 mm long, right through the casting
@@ -69,12 +70,15 @@ PUSH_Y = 2.0                  # moved toward the NOSE (+y) off centre so it cove
                               # which is off centre the other way (owner, test print 2026-11-16)
 
 # --- Holder ---
-TRAY_Y = -1.0        # the holder's body (and the Dragy and cap) sits this far toward the TAIL of the screws and
-                     # the oval hole: the screw holes are 1 mm toward the nose in the holder (test print 2026-11-16)
-NOSE_R = 8.0         # the holder's two nose-side corners (plan view) are rounded this much, to clear the pocket's
+TRAY_Y = -3.6        # the holder's body (and the Dragy and cap) sits this far toward the TAIL of the screws and
+                     # the oval hole. v2 (0) hit the pocket's nose end; v3 (-1) fitted but rested with its holes about
+                     # half a screw width (~2 mm) tail-ward of the pad's (test prints 2026-11-16). At -3 the body would
+                     # sit where v3's rested, against the nose end; -3.6 leaves ~0.5 mm there (with 1.8 mm walls, NOSE_R 6).
+SLOT = 1.0           # the screw holes are slots, this far each way along the board (the 2 mm above is an estimate)
+NOSE_R = 6.0         # the holder's two nose-side corners (plan view) are rounded this much, to clear the pocket's
                      # rounder nose-side corners
 FIT = 0.25           # clearance per side round the Dragy
-WALL = 2.4           # side walls
+WALL = 1.8           # side walls (2.4 to v4's first cut: stiffer than needed, owner 2026-11-16)
 END_WALL = 3.6       # far-end wall: thicker, as the screw's counterbore runs into it
 LIP = 1.2            # top lips over the Dragy's edges (45 deg underneath, so they print without supports)
 TOP_CLEAR = 0.3      # gap over the Dragy's top, under the lips
@@ -231,6 +235,8 @@ def holder(grip=True):
                               [-POCKET_L / 2 + LIP, -(POCKET_W - 2 * LIP) / 2, FLOOR_TOP + POCKET_H + LIP]))
     mouth = Manifold.cube([WALL + 2, POCKET_W, POCKET_H + LIP + 1]).translate([X_OPEN - 1, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
+    # Round the two nose-side (+y) corners in plan (before the snap bumps go on: v3 clipped the nose-side one off).
+    h ^= nose_rounded(2 * BASE_X, -OUT_W, w2, NOSE_R).extrude(TOP + 1)
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
     # Centred on the Dragy's mid-height, PUSH_Y toward the nose; the point stays well under the lip.
     tall = PUSH_H + PUSH_W / 2
@@ -250,17 +256,22 @@ def holder(grip=True):
         h += Manifold.sphere(1.5, circular_segments=24).scale([1, CAP_SNAP / 1.5, 1]).translate(
             [X_OPEN - CAP_DEPTH / 2, sy * w2, SNAP_Z])
     h += tether_hook()
-    # Round the two nose-side (+y) corners in plan, then move the body TRAY_Y toward the tail of the screws.
-    h ^= nose_rounded(2 * BASE_X, -OUT_W, w2, NOSE_R).extrude(TOP + 1)
+    # Move the body TRAY_Y toward the tail of the screws.
     h = h.translate([0, TRAY_Y, 0])
-    # The two M4 screws: clearance holes down to the pad, counterbores up from the head's seat.
+    # The two M4 screws: clearance holes down to the pad, counterbores up from the head's seat; both slotted
+    # SLOT each way along the board, to take up error in where the pad's holes are.
     for sx in (1, -1):
-        h -= s.rod(SEAT + 2, BOLT_HOLE, -1).translate([sx * M4_SPACING / 2, 0, 0])
-        h -= s.rod(TOP, HEAD_BORE, SEAT).translate([sx * M4_SPACING / 2, 0, 0])
+        h -= slot(SEAT + 2, BOLT_HOLE, -1).translate([sx * M4_SPACING / 2, 0, 0])
+        h -= slot(TOP, HEAD_BORE, SEAT).translate([sx * M4_SPACING / 2, 0, 0])
     # Optional plug into the oval hole (centred on the hole, not the body).
     if PLUG:
         h += hole_section().offset(-PLUG_CLR, circular_segments=64).extrude(PLUG_DEPTH + 0.5).translate([0, 0, -PLUG_DEPTH])
     return h
+
+
+def slot(length, d, start):
+    """A rod of diameter d along z from `start`, stretched SLOT each way along y."""
+    return Manifold.hull(s.rod(length, d, start, seg=32).translate([0, -SLOT, 0]) + s.rod(length, d, start, seg=32).translate([0, SLOT, 0]))
 
 
 def _stadium(w, t):
@@ -325,7 +336,7 @@ def casting():
     """The swingarm round the pad (pad frame): the pocket (rim RIM_H high), the oval hole, the M4 holes.
     Only the pocket and the holes are measured; the block round them is a placeholder."""
     block = Manifold.cube([PAD_W + 30, PAD_L + 30, RIM_H + 12]).translate([-(PAD_W + 30) / 2, -(PAD_L + 30) / 2, -12])
-    pocket = pad_outline().extrude(RIM_H + 1)
+    pocket = pad_outline().translate([0, -HOLES_NOSEWARD]).extrude(RIM_H + 1)
     hole = hole_section().extrude(HOLE_D + 1).translate([0, 0, -HOLE_D])
     threads = Manifold()
     for sx in (1, -1):
@@ -352,8 +363,12 @@ def main():
         "the tether's ring sits on the hook's arm but must stretch over its tip": PEG_D < RING_ID < PEG_TIP - 0.5,
         # The hook's part outside the wall must meet the wall at its lowest point, or it starts in mid-air.
         "the tether hook starts inside the wall (no floating start)": hook_rooted(),
-        "each screw head fully seated on plastic": all(((s.rod(0.5, 7.0, SEAT - 0.5) - s.rod(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
-                                                        .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1)),
+        "each screw head seated on plastic (either side of the slot, anywhere along it)": all(
+            ((s.rod(0.5, 7.0, SEAT - 0.5).translate([0, sy * SLOT, 0]) - slot(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
+             .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1) for sy in (1, -1, 0)),
+        "both snap bumps for the cap are there": all(
+            (h ^ Manifold.cube([3.2, 1.0, 3.2]).translate([X_OPEN - CAP_DEPTH / 2 - 1.6, TRAY_Y + sy * OUT_W / 2 - (sy < 0), SNAP_Z - 1.6])).volume() > 1.0
+            for sy in (1, -1)),
         # The ring pushes the Dragy back against the far wall; there it presses GASKET_SQUEEZE into its end face.
         "gasket just touches the Dragy (pushed back) before its squeeze": (cap(squeeze=0) ^ d.translate([-FIT, 0, 0])).volume() < 0.01,
         "gasket's opening holds the USB-C opening with 0.5 mm to spare all round": (
