@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from manifold3d import CrossSection, Manifold, OpType
+from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
@@ -207,6 +207,8 @@ def holder(grip=True):
     slope = Manifold.hull(rounded_rect(POCKET_L, POCKET_W, DRAGY_R + FIT).extrude(0.01).translate([0, 0, FLOOR_TOP + POCKET_H])
                           + Manifold.cube([open_l, POCKET_W - 2 * LIP, 0.01]).translate(
                               [-POCKET_L / 2 + LIP, -(POCKET_W - 2 * LIP) / 2, FLOOR_TOP + POCKET_H + LIP]))
+    slope += slope.translate([10, 0, 0])   # the lips' 45 deg undersides run straight out of the open end too, like the pocket
+                                           # (v5 at first left their rounded corners there: a flat ceiling that needed supports)
     # Posts: the side walls run on past the open end, a little wider, round the gate's grooves (the Dragy
     # still slides in between them: they're no narrower than the pocket).
     posts = (rounded_rect(X_POST - X_OPEN + 1 + 2 * POST_R, 2 * POST_W2, POST_R).translate([(X_OPEN - 1 + X_POST) / 2 - POST_R, 0])
@@ -282,7 +284,7 @@ def click_section(grow=0.0):
     """The click's ridge in section (x out from the plate's outer face, z), tip at (CLICK_H, CLICK_Z above the shelf)."""
     zc, up = FLOOR_TOP + CLICK_Z, CLICK_H / np.tan(np.radians(CLICK_UP))
     tri = CrossSection([[(-0.01, zc - CLICK_H), (CLICK_H, zc), (-0.01, zc + up)]])
-    return tri.offset(grow, circular_segments=16) if grow else tri
+    return tri.offset(grow, JoinType.Miter, miter_limit=4.0) if grow else tri   # sharp corners: a rounded tip would overhang
 
 
 def click(x0, grow=0.0, extra=0.0):
@@ -344,6 +346,17 @@ def casting():
     return block - pocket - hole - threads
 
 
+def overhang_area(m):
+    """Area (mm^2) of downward faces flatter than 45 deg, off the bed, as m sits (z up): what needs supports."""
+    mesh = m.to_mesh()
+    v, f = np.asarray(mesh.vert_properties)[:, :3], np.asarray(mesh.tri_verts)
+    t = v[f]
+    n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
+    a = np.linalg.norm(n, axis=1) / 2
+    nz = n[:, 2] / (2 * a + 1e-12)
+    return a[(nz < -np.cos(np.radians(45)) - 1e-4) & (t[:, :, 2].min(1) > v[:, 2].min() + 0.01)].sum()
+
+
 def room(m, cast_outline, step=0.05, upto=5.0):
     """The smallest gap (to `step`) in plan between part m and the pocket's side."""
     plan = m.project()
@@ -393,6 +406,8 @@ def main():
         "each screw head seated on plastic (either side of the slot, anywhere along it)": all(
             ((s.rod(0.5, 7.0, SEAT - 0.5).translate([0, sy * SLOT, 0]) - slot(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
              .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1) for sy in (1, -1, 0)),
+        "holder prints floor down with no overhang past 45 deg (no supports)": overhang_area(h) < 0.01,
+        "gate prints upside down on its ridge with no overhang past 45 deg": overhang_area(s.face_down(gt, [0, 0, 1.0])) < 0.01,
         "a charging plug clears the pocket's rim and the posts": (usb_plug() ^ cast).is_empty() and (usb_plug() ^ h).is_empty(),
     }
     for k, v in checks.items():
