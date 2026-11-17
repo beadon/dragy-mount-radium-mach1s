@@ -47,8 +47,8 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   screw heads sit under the Dragy: slide it out to reach them.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
   USB-C port's centre 7.8 mm above it, so a charging cable plugs straight in from the right, over the rim.
-- **The gate** closes the USB-C end. Past the open end, the side walls run on 2.5 mm as posts, each
-  with a vertical groove; the gate, a 1.27 mm (3-line) PLA plate, drops into them from above and stands
+- **The gate** closes the USB-C end. Past the open end, the side walls run on, the same thickness, to the
+  base's end (its two outer corners rounded 2.5 mm), each with a vertical groove 0.45 mm deep; the gate, a 1.27 mm (3-line) PLA plate, drops into them from above and stands
   on the base's shelf. **The plate is the spring:** two pads on its inside press on the Dragy's end face
   either side of the USB-C opening (nothing touches the port), so the plate bows between its grooves and
   holds the Dragy against the far wall: no rattle along its length. The pads reach 0.2 mm into the Dragy
@@ -116,7 +116,9 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   held tight by its accidental ~1 mm squeeze at the open end's corners)
 - [x] v6: a squeeze rib inside each side wall, 0.4 mm into the Dragy's sides, on the upper part of the wall (which
   flexes); they replace the 0.05 mm grip bumps. The gate is 1.27 mm thick (3 lines; v5's 0.86 mm felt flimsy), its
-  pads' preload cut from 0.4 to 0.2 mm to keep its force about the same (stiffness goes as thickness cubed)
+  pads' preload cut from 0.4 to 0.2 mm to keep its force about the same (stiffness goes as thickness cubed). The posts
+  are flush with the side walls (v5's were 0.8 mm wider, a bump that broke the rounded corner): grooves 0.9 → 0.45 mm
+  deep, and the walls run out to the base's end with one 2.5 mm rounding
 - [ ] Print v6: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
   still click in, lift out with a fingernail, and stay put on the road? Does a charging cable reach over the rim?
 

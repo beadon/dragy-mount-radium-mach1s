@@ -67,7 +67,8 @@ Assumed / unknown:
   3.6 mm tail-ward of the screws (`TRAY_Y`) with slotted holes (`SLOT`, ±1 mm), and rounds its nose-side corners
   (`NOSE_R`). Anything that sticks out of a wall must be added after the corner rounding (v3 lost a snap bump that way).
   The pocket's nose end leaves little room past the holder's open end on its nose side: v5's gate posts (2.5 mm)
-  fit with 1.4 mm to spare in the model; a zig-zag spring there (~6 mm) would not.
+  fit with 1.4 mm to spare in the model; a zig-zag spring there (~6 mm) would not. v6 keeps the posts flush with the
+  1.3 mm walls (0.45 mm grooves) and runs them to the base's end: 2.05 mm to spare.
 - Dragy: USB-C on its end face, long side across the 27 mm width, its case cut-out 6.91 from one side wall
   and 10.21 from the other (measured, ~0.1 slop): centre 1.65 off centre, toward the TAIL with the logo up and
   the USB-C end on the rider's right (owner, `USB_SIDE = -1`). Mid-height assumed. 4 mm plan corner radius; bottom edges rounded 2 mm, top edges sharp (owner). The far wall has an 8 mm push-out hole,
