@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from manifold3d import CrossSection, Manifold
+from manifold3d import CrossSection, Manifold, OpType
 
 import shoe as s
 
@@ -102,6 +102,8 @@ GROOVE_D = 0.9       # the plate's ends reach this far into each side wall, past
 GROOVE_LIP = 1.2     # wall beyond the groove (toward +x) that takes the plate's push
 POST_R = 1.5         # the posts' outer +x corners are rounded this much
 GATE_TAB = 3.0       # the plate stands this far above the holder's top, to pinch it and lift it out
+RIDGE_D, RIDGE_H = 1.2, 1.5   # a ridge along the top of its outer face: square underside, so a fingernail catches it
+                              # (owner, 2026-11-17); it stays above the posts. The gate prints standing on it
 PRELOAD = 0.4        # the pads reach this far into the Dragy's end face with the Dragy against the far wall
 PAD_Y = (7.3, -8.3)  # the pads' centres along y (Dragy-centred): clear of the USB-C cut-out, which runs
                      # from -6.57 to 3.27, and of the end face's rounded corners (|y| > 9.48)
@@ -255,12 +257,12 @@ def grooves():
 
 def pads():
     """The gate's two pads (holder's frame): from the plate's inside face to PRELOAD into the Dragy's end
-    face (with the Dragy against the far wall). Their undersides are 45 deg: they print without supports
-    and, as the gate goes down, ride over the Dragy's top edge and push it back."""
+    face (with the Dragy against the far wall). Their undersides are 45 deg, so as the gate goes down they
+    ride over the Dragy's top edge and push it back; their tops are 45 deg too, as the gate prints upside down."""
     x_tip = X_OPEN - 2 * FIT - PRELOAD
     depth = X_GATE - x_tip
     z0, z1 = FLOOR_TOP + PAD_Z[0], FLOOR_TOP + PAD_Z[1]
-    prof = CrossSection([[(0, z0 - depth), (0, z1), (-depth, z1), (-depth, z0)]])   # (x from the plate, z)
+    prof = CrossSection([[(0, z0 - depth), (0, z1 + depth), (-depth, z1), (-depth, z0)]])   # (x from the plate, z)
     rot = np.array([[1.0, 0, 0], [0, 0, 1.0], [0, 1.0, 0]])                          # section (x, z), extruded along y
     m = Manifold()
     for py in PAD_Y:
@@ -272,6 +274,7 @@ def gate(with_pads=True):
     """The plate that closes the open end, with its pads (pad frame)."""
     y2 = POCKET_W / 2 + GROOVE_D
     g = Manifold.cube([GATE_T, 2 * y2, TOP + GATE_TAB - FLOOR_TOP]).translate([X_GATE, -y2, FLOOR_TOP])
+    g += Manifold.cube([GATE_T + RIDGE_D, 2 * y2, RIDGE_H]).translate([X_GATE, -y2, TOP + GATE_TAB - RIDGE_H])
     if with_pads:
         g += pads()
     return g.translate([0, TRAY_Y, 0])
@@ -332,7 +335,7 @@ def main():
         assert zero == bad == 0
     d_back = d.translate([-FIT, 0, 0])                 # the Dragy against the far wall
     pocket_plan = pad_outline().translate([0, -HOLES_NOSEWARD])
-    lift = lambda m: Manifold.hull(m + m.translate([0, 0, 40]))
+    lift = lambda m: Manifold.batch_boolean([m.translate([0, 0, 0.25 * k]) for k in range(161)], OpType.Add)   # swept up 40 mm
     lip_box = lambda sy: Manifold.cube([GROOVE_LIP - 0.2, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(
         [X_GATE + GATE_T + GATE_CLR + 0.1, TRAY_Y + (POCKET_W / 2 + 0.05 if sy > 0 else -POCKET_W / 2 - GROOVE_D + 0.05), FLOOR_TOP + 0.1])
     checks = {
@@ -345,6 +348,8 @@ def main():
         "gate clear of the holder": (gt ^ h).volume() < 0.01,
         "gate lifts straight up out of the holder": (lift(gt) ^ h).volume() < 0.01,
         "gate clear of the screws": (gt ^ sc).volume() < 0.01,
+        "the ridge's underside clears the posts' tops (seated)": TOP + GATE_TAB - RIDGE_H >= TOP + 0.5,
+        "the ridge stays inside the posts' ends": X_GATE + GATE_T + RIDGE_D <= X_POST,
         "both grooves have a full-height lip behind the plate": all((lip_box(sy) - h).volume() < 0.01 for sy in (1, -1)),
         "the pads press PRELOAD into the Dragy (against the far wall)": (gt ^ d_back).volume() > 0.5
             and (gt ^ d_back.translate([-PRELOAD - 0.01, 0, 0])).volume() < 0.01,
@@ -366,7 +371,7 @@ def main():
           f"{room(h, pocket_plan):.2f} mm (holder); the Dragy's top is {FLOOR_TOP + DRAGY_T - RIM_H:.1f} mm above the rim")
     print(f"gate spring (estimate): {f0:.1f}-{f1:.1f} N per pad, strain {e0:.2f}-{e1:.2f} % (pads pushed {PRELOAD}-{PRELOAD + 2 * FIT:.1f} mm)")
     s.write_stl(s.face_down(h, [0, 0, -1.0]), out / f"dragy_holder_v{VERSION}.stl")   # floor down: no supports
-    s.write_stl(s.face_down(gt, [1.0, 0, 0]), out / f"dragy_gate_v{VERSION}.stl")     # flat, outer face down, pads up
+    s.write_stl(s.face_down(gt, [0, 0, 1.0]), out / f"dragy_gate_v{VERSION}.stl")     # upside down, on its ridge
     colours = {"truck": (0.55, 0.55, 0.58), "tray": (0.80, 0.15, 0.12), "gate": (0.95, 0.65, 0.10),
                "dragy": (0.25, 0.45, 0.85), "steel": (0.2, 0.2, 0.2)}
     scene = {"front_swingarm_pad_schematic": (to_world(cast), "truck"), "dragy_holder": (to_world(h), "tray"),

@@ -20,7 +20,7 @@ holes make that unnecessary here, but the shoe stays in this repo as its own com
 | Part | File (in `out/`) | Print |
 |---|---|---|
 | Holder | `dragy_holder_v5.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
-| Gate | `dragy_gate_v5.stl` | Flat, outer face down, pads up. No supports. **PLA** (PETG if it relaxes in the heat): it's the spring. |
+| Gate | `dragy_gate_v5.stl` | Upside down, standing on its ridge. No supports (a brim helps it stand). **PLA** (PETG if it relaxes in the heat): it's the spring. |
 | Assembly | `dragy_assembly_v5.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
 | Shoe (separate component) | `shoe.stl` | Not used by v2-v5. Top face down, plug up, no supports. See `shoe.py`. |
 
@@ -53,7 +53,7 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   holds the Dragy against the far wall: no rattle along its length. The pads reach 0.4 mm into the Dragy
   with it against the far wall, 0.9 mm with it pushed out (estimate: 3.4-7.6 N per pad, 0.3-0.6 % strain,
   well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
-  top edge and push it back. Pinch the tab above the holder's top and lift the gate out to charge
+  top edge and push it back. Catch a fingernail under the ridge along its top (square underside) and lift the gate out to charge
   (it needs ~20 mm of room above the holder). The spring force holds it in its grooves.
 - **The pocket's sides run straight out of the open end** (v5): in v2-v4 its rounded plan corners narrowed
   the way out by ~1 mm each side, so the Dragy only got in by bending the walls.

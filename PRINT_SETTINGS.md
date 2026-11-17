@@ -53,7 +53,9 @@ pockets and slots that would be hard to clear.
   45° pointed top.
 - If the slicer still adds supports, it's because "Support on build plate only" is on with auto supports:
   turn supports off for this part.
-- **Gate** (`dragy_gate_v5.stl`): flat, outer face down, the two pads up. Supports off. PLA, the same profile;
+- **Gate** (`dragy_gate_v5.stl`): upside down, standing on the fingernail ridge (as exported), so the ridge's
+  catch faces up and prints sharp, and the plate bends along its layers, not across them. Supports off: the pads
+  are 45° top and bottom. It's a thin 18 mm-tall wall on a 2 mm foot: add a brim if it wobbles or lifts. PLA, the same profile;
   the 0.86 mm plate is exactly 2 perimeters (no infill), and it's the spring, so don't thicken it. If PLA relaxes
   in a hot pocket over time, print it in PETG.
 - **Shoe** (`shoe.stl`, not used by v2-v5): as exported, top face down, plug up. Supports off: with them on,
