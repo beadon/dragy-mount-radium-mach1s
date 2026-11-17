@@ -56,7 +56,8 @@ pockets and slots that would be hard to clear.
 - **Gate** (`dragy_gate_v6.stl`): upside down, standing on the fingernail ridge (as exported), so the ridge's
   catch faces up and prints sharp, and the plate bends along its layers, not across them. Supports off: the pads
   are 45° top and bottom. It's a thin 18 mm-tall wall on a 2 mm foot: add a brim if it wobbles or lifts. PLA, the same profile;
-  the 0.86 mm plate is exactly 2 perimeters (no infill), and it's the spring, so don't thicken it. If PLA relaxes
+  the 1.27 mm plate is 3 lines, and it's the spring: its stiffness goes as its thickness cubed, so change
+  `GATE_T` only with `PRELOAD` (v5's 0.86 mm, 2 lines, felt flimsy). If PLA relaxes
   in a hot pocket over time, print it in PETG.
 - **Shoe** (`shoe.stl`, not used by v2-v6): as exported, top face down, plug up. Supports off: with them on,
   build-plate-only supports can reach into the side-opening nut slots.

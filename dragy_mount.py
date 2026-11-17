@@ -101,7 +101,8 @@ BOLT_HOLE, HEAD_BORE, HEAD_H = s.BOLT_HOLE, s.HEAD_BORE, s.HEAD_H
 # The plate is the spring: it spans the open end between its two grooves, and two pads on its inside press
 # on the Dragy's end face either side of the USB-C opening, so the plate bows between the grooves and holds
 # the Dragy against the far wall (no rattle along its length). It lifts straight up out of the grooves.
-GATE_T = 0.86        # the plate: 2 lines, thin so it bends as a spring (it rests on the shelf beyond the open end)
+GATE_T = 1.27        # the plate: 3 lines (v5's 2 lines, 0.86, felt flimsy: owner 2026-11-17); it bends as the spring,
+                     # and stiffness goes as GATE_T^3, so PRELOAD is cut to match
 GATE_GAP = 0.2       # from the open end to the plate's inside face (the Dragy's face is a further 2 x FIT in)
 GATE_CLR = 0.2       # in the grooves, each side
 GROOVE_D = 0.9       # the plate's ends reach this far into each side wall, past the pocket's side
@@ -110,7 +111,7 @@ POST_R = 1.5         # the posts' outer +x corners are rounded this much
 GATE_TAB = 3.0       # the plate stands this far above the holder's top, to pinch it and lift it out
 RIDGE_D, RIDGE_H = 1.2, 1.5   # a ridge along the top of its outer face: square underside, so a fingernail catches it
                               # (owner, 2026-11-17); it stays above the posts. The gate prints standing on it
-PRELOAD = 0.4        # the pads reach this far into the Dragy's end face with the Dragy against the far wall
+PRELOAD = 0.2        # the pads reach this far into the Dragy's end face with the Dragy against the far wall (v5: 0.4)
 PAD_Y = (7.3, -8.3)  # the pads' centres along y (Dragy-centred): clear of the USB-C cut-out, which runs
                      # from -6.57 to 3.27, and of the end face's rounded corners (|y| > 9.48)
 PAD_W = 1.6          # each pad's width along y

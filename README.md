@@ -48,16 +48,16 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
   USB-C port's centre 7.8 mm above it, so a charging cable plugs straight in from the right, over the rim.
 - **The gate** closes the USB-C end. Past the open end, the side walls run on 2.5 mm as posts, each
-  with a vertical groove; the gate, a 0.86 mm (2-line) PLA plate, drops into them from above and stands
+  with a vertical groove; the gate, a 1.27 mm (3-line) PLA plate, drops into them from above and stands
   on the base's shelf. **The plate is the spring:** two pads on its inside press on the Dragy's end face
   either side of the USB-C opening (nothing touches the port), so the plate bows between its grooves and
-  holds the Dragy against the far wall: no rattle along its length. The pads reach 0.4 mm into the Dragy
-  with it against the far wall, 0.9 mm with it pushed out (estimate: 3.4-7.6 N per pad, 0.3-0.6 % strain,
-  well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
+  holds the Dragy against the far wall: no rattle along its length. The pads reach 0.2 mm into the Dragy
+  with it against the far wall, where they push it as the gate goes in (estimate: ~5.5 N per pad, 0.2 % strain;
+  19 N and 0.7 % if the Dragy stayed 0.5 mm out, still well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
   top edge and push it back. Catch a fingernail under the ridge along its top (square underside) and lift the gate out to charge
   (it needs ~20 mm of room above the holder). It **clicks** in: a 0.3 mm ridge near the bottom of each of its edges
   drops into a notch in its groove, and the plate's own spring holds it there, so it can't vibrate out. The ridge's
-  top is a shallow 30°, so a firm pull lifts it out (estimate: ~7-16 N).
+  top is a shallow 30°, so a firm pull lifts it out (estimate: ~12 N).
 - **The pocket's sides run straight out of the open end** (v5): in v2-v4 its rounded plan corners narrowed
   the way out by ~1 mm each side, so the Dragy only got in by bending the walls.
 - **The USB-C port is off centre** (measured): its case cut-out is 6.91 mm from one side wall and 10.21 mm
@@ -115,8 +115,9 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   open end); the gate stops the rattle along the Dragy's length, but it moves a fraction of a mm up and down (v4 was
   held tight by its accidental ~1 mm squeeze at the open end's corners)
 - [x] v6: a squeeze rib inside each side wall, 0.4 mm into the Dragy's sides, on the upper part of the wall (which
-  flexes); they replace the 0.05 mm grip bumps. The gate is unchanged (a v5 gate fits v6)
-- [ ] Print v6's holder: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
+  flexes); they replace the 0.05 mm grip bumps. The gate is 1.27 mm thick (3 lines; v5's 0.86 mm felt flimsy), its
+  pads' preload cut from 0.4 to 0.2 mm to keep its force about the same (stiffness goes as thickness cubed)
+- [ ] Print v6: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
   still click in, lift out with a fingernail, and stay put on the road? Does a charging cable reach over the rim?
 
 ## License
