@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 5
+VERSION = 6
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -84,7 +84,13 @@ WALL = 1.3           # side walls: 3 clean lines at 0.45 mm (was 2.4, then 1.8: 
 END_WALL = 3.6       # far-end wall: thicker, as the screw's counterbore runs into it
 LIP = 1.2            # top lips over the Dragy's edges (45 deg underneath, so they print without supports)
 TOP_CLEAR = 0.3      # gap over the Dragy's top, under the lips
-GRIP = 0.3           # small bumps inside the side walls near the open end, so the Dragy stays put while charging
+# Squeeze ribs: one inside each side wall presses SQUEEZE into the Dragy's side and the thin walls flex, so it's
+# clamped up/down and side to side. v4 did this by accident (its rounded corners at the open end were ~1 mm
+# too narrow) and held the Dragy tight; v5 straightened them and left ~0.3 mm of play up and down (owner,
+# 2026-11-17). They replace v2-v5's grip bumps (0.05 mm).
+SQUEEZE = 0.4        # into each side of the Dragy
+SQ_X = (12.0, 16.0)  # the rib's flat face along x, on the straight part of the Dragy's side (its corners start at 17.5)
+SQ_Z = (6.0, DRAGY_T - 0.5)   # its flat face's height above the floor: the upper part of the wall, which can flex
 PLUG = False         # a plug into the oval hole: not needed (the screws and the pocket's walls locate the
                      # holder), and it would stop the holder printing floor-down
 PLUG_CLR, PLUG_DEPTH = 0.2, 4.0
@@ -191,6 +197,20 @@ def screws():
     return m
 
 
+def squeeze_ribs():
+    """The two squeeze ribs (holder's frame, before TRAY_Y): 45 deg ramps at both ends in plan, so the Dragy
+    slides past, and a 45 deg underside, so they print without supports."""
+    d = FIT + SQUEEZE                                  # out from the wall
+    x0, x1 = SQ_X
+    z0, z1 = FLOOR_TOP + SQ_Z[0], FLOOR_TOP + SQ_Z[1]
+    w = POCKET_W / 2
+    plan = [(x0 - d, w + 0.3), (x1 + d, w + 0.3), (x1 + d, w), (x1, w - d), (x0, w - d), (x0 - d, w)]
+    pts = [(x, y, z) for x, y in plan for z in (z0, z1)]                               # the rib's face and ramps
+    pts += [(x, y, z0 - d) for x, y in ((x0 - d, w), (x1 + d, w), (x0 - d, w + 0.3), (x1 + d, w + 0.3))]   # 45 deg below
+    rib = Manifold.hull_points(pts)
+    return rib + rib.mirror([0, 1, 0])
+
+
 def holder(grip=True):
     w2 = OUT_W / 2
     outer = Manifold.cube([X_OPEN - X_FAR, OUT_W, TOP]).translate([X_FAR, -w2, 0])
@@ -229,11 +249,8 @@ def holder(grip=True):
     prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]]).translate([PUSH_Y, 0])
     rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
     h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
-    # Grip bumps inside the side walls near the open end: GRIP - FIT (0.05 mm) of interference.
-    for sy in ((1, -1) if grip else ()):
-        bump = Manifold.cylinder(POCKET_H - 1, 1.5, circular_segments=24).scale([1, GRIP / 1.5, 1])
-        h += bump.translate([X_OPEN - 4, sy * POCKET_W / 2, FLOOR_TOP - 0.01]) ^ Manifold.cube(   # from the floor: no overhang
-            [10, POCKET_W, 40]).translate([X_OPEN - 9, -POCKET_W / 2, 0])
+    if grip:
+        h += squeeze_ribs()
     # Move the body TRAY_Y toward the tail of the screws.
     h = h.translate([0, TRAY_Y, 0])
     # The two M4 screws: clearance holes down to the pad, counterbores up from the head's seat; both slotted
@@ -382,7 +399,9 @@ def main():
     checks = {
         "holder inside the pad's pocket": (h ^ cast).volume() < 0.01,
         "gate inside the pad's pocket": (gt ^ cast).volume() < 0.01,
-        "Dragy fits the holder (apart from the grip bumps)": (d ^ holder(grip=False)).volume() < 0.01,
+        "Dragy fits the holder (apart from the squeeze ribs)": (d ^ holder(grip=False)).volume() < 0.01,
+        "the ribs press SQUEEZE into each side of the Dragy": (d ^ h).volume() > 1.0 and (h ^ d.translate([0, -TRAY_Y, 0]).scale(
+            [1, (DRAGY_W - 2 * SQUEEZE - 0.02) / DRAGY_W, 1]).translate([0, TRAY_Y, 0])).volume() < 0.01,
         "Dragy slides in and out between the posts": (Manifold.hull(d + d.translate([40, 0, 0])) ^ holder(grip=False)).volume() < 0.01,
         "screws clear of holder and Dragy (heads seated)": all((sc ^ m).volume() < 0.01 for m in (h, d)),
         "screws end flush with the casting's underside": abs(SEAT - SCREW_LEN + THREAD) < 1e-9,
