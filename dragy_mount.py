@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 6
+VERSION = 7
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -105,10 +105,10 @@ GATE_T = 1.27        # the plate: 3 lines (v5's 2 lines, 0.86, felt flimsy: owne
                      # and stiffness goes as GATE_T^3, so PRELOAD is cut to match
 GATE_GAP = 0.2       # from the open end to the plate's inside face (the Dragy's face is a further 2 x FIT in)
 GATE_CLR = 0.2       # in the grooves, each side
-GROOVE_D = 0.45      # the plate's ends reach this far into each side wall, past the pocket's side: shallow, so the
-                     # groove fits inside the 1.3 mm wall with 0.65 behind it (v5's 0.9 needed posts 0.8 wider than
-                     # the walls, a bump that also broke the rounded corner: owner 2026-11-17)
-END_R = 2.5          # the holder's two outer corners at the open end, in plan (the walls run out to the base's end)
+GROOVE_D = 0.9       # the plate's ends reach this far into each side wall, past the pocket's side (v7: back from v6's
+                     # 0.45, which let the gate slip out of its grooves: owner 2026-11-18)
+GROOVE_LIP = 1.2     # wall beyond the groove (toward +x) that takes the plate's push
+POST_R = 1.5         # the posts' outer +x corners are rounded this much
 GATE_TAB = 3.0       # the plate stands this far above the holder's top, to pinch it and lift it out
 RIDGE_D, RIDGE_H = 1.2, 1.5   # a ridge along the top of its outer face: square underside, so a fingernail catches it
                               # (owner, 2026-11-17); it stays above the posts. The gate prints standing on it
@@ -135,8 +135,8 @@ X_FAR = -POCKET_L / 2 - END_WALL             # the far end, outside
 TOP = FLOOR_TOP + POCKET_H + LIP
 BASE_X = M4_SPACING / 2 + HEAD_BORE / 2 + 1.6   # the base (below the Dragy) reaches past both screws' counterbores
 X_GATE = X_OPEN + GATE_GAP                   # the plate's inside face
-X_POST = BASE_X                              # the side walls run on past the open end to the base's end, round the grooves
-GROOVE_LIP = X_POST - (X_GATE + GATE_T + GATE_CLR)   # wall beyond the groove (toward +x) that takes the plate's push
+X_POST = X_GATE + GATE_T + GATE_CLR + GROOVE_LIP   # the side walls' extension past the open end, round the grooves
+POST_W2 = POCKET_W / 2 + GROOVE_D + GATE_CLR + 1.0   # the posts are this wide (each side of the centre): 1.0 behind the groove
 
 T_RAD = np.radians(PAD_TILT)
 PAD_FRAME = np.column_stack([[1.0, 0, 0], [0, np.cos(T_RAD), np.sin(T_RAD)], [0, -np.sin(T_RAD), np.cos(T_RAD)]])
@@ -233,16 +233,13 @@ def holder(grip=True):
                                            # (v5 at first left their rounded corners there: a flat ceiling that needed supports)
     # Posts: the side walls run on past the open end, a little wider, round the gate's grooves (the Dragy
     # still slides in between them: they're no narrower than the pocket).
-    # Posts: the side walls run on, the same thickness, to the base's end, round the gate's grooves.
-    outer += Manifold.cube([X_POST - X_OPEN + 1, OUT_W, TOP]).translate([X_OPEN - 1, -w2, 0])
-    # The open end's two outer corners are rounded END_R, from where the nose-side corner's NOSE_R rounding begins.
-    x_end0 = BASE_X - NOSE_R
-    end = (rounded_rect(X_POST - x_end0 + 2 * END_R, OUT_W, END_R).translate([(x_end0 + X_POST) / 2 - END_R, 0])
-           ^ CrossSection.square([X_POST - x_end0, OUT_W]).translate([x_end0, -w2]))
+    posts = (rounded_rect(X_POST - X_OPEN + 1 + 2 * POST_R, 2 * POST_W2, POST_R).translate([(X_OPEN - 1 + X_POST) / 2 - POST_R, 0])
+             ^ CrossSection.square([X_POST - X_OPEN + 1, 2 * POST_W2]).translate([X_OPEN - 1, -POST_W2]))
+    outer += posts.extrude(TOP)
     mouth = Manifold.cube([X_POST - X_OPEN + 3, POCKET_W, TOP]).translate([X_OPEN - 1.3, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
     # Round the two nose-side (+y) corners in plan (add anything that sticks out of a wall after this: v3 lost a snap bump).
-    h ^= (nose_rounded(2 * BASE_X, -w2, w2, NOSE_R) + end).extrude(TOP + 1)
+    h ^= (nose_rounded(2 * BASE_X, -POST_W2, w2, NOSE_R) + posts).extrude(TOP + 1)
     h -= grooves()
     h -= click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR)   # the notches, for the plate pushed out
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
@@ -399,7 +396,7 @@ def main():
     d_back = d.translate([-FIT, 0, 0])                 # the Dragy against the far wall
     pocket_plan = pad_outline().translate([0, -HOLES_NOSEWARD])
     lift = lambda m: Manifold.batch_boolean([m.translate([0, 0, 0.25 * k]) for k in range(161)], OpType.Add)   # swept up 40 mm
-    lip_box = lambda sy: Manifold.cube([1.0, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(   # at least 1 mm of lip
+    lip_box = lambda sy: Manifold.cube([GROOVE_LIP - 0.2, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(
         [X_GATE + GATE_T + GATE_CLR + 0.1, TRAY_Y + (POCKET_W / 2 + 0.05 if sy > 0 else -POCKET_W / 2 - GROOVE_D + 0.05), FLOOR_TOP + 0.1])
     checks = {
         "holder inside the pad's pocket": (h ^ cast).volume() < 0.01,
@@ -418,7 +415,7 @@ def main():
         "gate clear of the screws": (gt ^ sc).volume() < 0.01,
         "the ridge's underside clears the posts' tops (seated)": TOP + GATE_TAB - RIDGE_H >= TOP + 0.5,
         "the ridge stays inside the posts' ends": X_GATE + GATE_T + RIDGE_D <= X_POST,
-        "both grooves have a full-height lip, 1 mm or more, behind the plate (bar the click's notch)": all(
+        "both grooves have a full-height lip behind the plate (bar the click's notch)": all(
             (lip_box(sy) - h - click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR).translate([0, TRAY_Y, 0])).volume() < 0.01
             for sy in (1, -1)),
         "the pads press PRELOAD into the Dragy (against the far wall)": (gt ^ d_back).volume() > 0.5
