@@ -7,23 +7,23 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v7, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
+**Status:** v8, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
 rattle along the Dragy's length, but the Dragy could move a fraction of a mm up and down; v6 squeezes it, but its shallow
-grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts, and v8 flares the walls out to them; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v7, shaded renders](docs/render.png)
+![Dragy mount v8, shaded renders](docs/render.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v7.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
-| Gate | `dragy_gate_v7.stl` | Upside down, standing on its ridge. No supports (a brim helps it stand). **PLA** (PETG if it relaxes in the heat): it's the spring. |
-| Assembly | `dragy_assembly_v7.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2-v7. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v8.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
+| Gate | `dragy_gate_v8.stl` | Upside down, standing on its ridge. No supports (a brim helps it stand). **PLA** (PETG if it relaxes in the heat): it's the spring. |
+| Assembly | `dragy_assembly_v8.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2-v8. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -48,8 +48,8 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   screw heads sit under the Dragy: slide it out to reach them.
 - **The floor is thick on purpose:** it lifts the Dragy so its top is 14.8 mm above the rim and the
   USB-C port's centre 7.8 mm above it, so a charging cable plugs straight in from the right, over the rim.
-- **The gate** closes the USB-C end. Past the open end, the side walls run on as two posts, 0.8 mm wider than the walls
-  each side (outer corners rounded 1.5 mm), each with a vertical groove 0.9 mm deep; the gate, a 1.27 mm (3-line) PLA plate, drops into them from above and stands
+- **The gate** closes the USB-C end. Near the open end, the side walls flare gradually (over 5 mm, past the squeeze ribs) to
+  posts 0.8 mm wider each side, which run on to the base's end (outer corners rounded 2 mm), each with a vertical groove 0.9 mm deep; the gate, a 1.27 mm (3-line) PLA plate, drops into them from above and stands
   on the base's shelf. **The plate is the spring:** two pads on its inside press on the Dragy's end face
   either side of the USB-C opening (nothing touches the port), so the plate bows between its grooves and
   holds the Dragy against the far wall: no rattle along its length. The pads reach 0.2 mm into the Dragy
@@ -123,7 +123,9 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] Print v6 (2026-11-18): the gate didn't stay in its 0.45 mm grooves
 - [x] v7: v5's posts and 0.9 mm grooves back (0.8 mm wider than the walls each side; the bump is the price of a gate
   that stays in); the 1.27 mm gate, its 0.2 mm preload and the squeeze ribs kept
-- [ ] Print v7: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
+- [x] v8: the side walls flare out to the posts over 5 mm (no step), and the posts run on to the base's end with one 2 mm
+  rounding each side (v7's posts stood out as a bump, with the base's end a step beyond them). 1.15 mm to the pocket
+- [ ] Print v8: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
   click in, lift out with a fingernail, and stay put on the road? Does a charging cable reach over the rim?
 
 ## License

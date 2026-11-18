@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 7
+VERSION = 8
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -107,8 +107,10 @@ GATE_GAP = 0.2       # from the open end to the plate's inside face (the Dragy's
 GATE_CLR = 0.2       # in the grooves, each side
 GROOVE_D = 0.9       # the plate's ends reach this far into each side wall, past the pocket's side (v7: back from v6's
                      # 0.45, which let the gate slip out of its grooves: owner 2026-11-18)
-GROOVE_LIP = 1.2     # wall beyond the groove (toward +x) that takes the plate's push
-POST_R = 1.5         # the posts' outer +x corners are rounded this much
+END_R = 2.0          # the holder's two outer corners at the open end, in plan
+FLARE = 5.0          # the side walls thicken gradually to the posts' width over this length (x), ending just short of
+                     # the open end: no step (owner 2026-11-18: v5/v7's posts stood out as a jarring bump). It begins
+                     # past the squeeze ribs, so the walls still flex there
 GATE_TAB = 3.0       # the plate stands this far above the holder's top, to pinch it and lift it out
 RIDGE_D, RIDGE_H = 1.2, 1.5   # a ridge along the top of its outer face: square underside, so a fingernail catches it
                               # (owner, 2026-11-17); it stays above the posts. The gate prints standing on it
@@ -135,7 +137,10 @@ X_FAR = -POCKET_L / 2 - END_WALL             # the far end, outside
 TOP = FLOOR_TOP + POCKET_H + LIP
 BASE_X = M4_SPACING / 2 + HEAD_BORE / 2 + 1.6   # the base (below the Dragy) reaches past both screws' counterbores
 X_GATE = X_OPEN + GATE_GAP                   # the plate's inside face
-X_POST = X_GATE + GATE_T + GATE_CLR + GROOVE_LIP   # the side walls' extension past the open end, round the grooves
+X_POST = BASE_X                              # the posts run on past the open end to the base's end, round the grooves
+GROOVE_LIP = X_POST - (X_GATE + GATE_T + GATE_CLR)   # wall beyond the groove (toward +x) that takes the plate's push
+X_FLARE1 = X_OPEN - 0.5                      # the walls reach the posts' full width here, before the grooves
+X_FLARE0 = X_FLARE1 - FLARE
 POST_W2 = POCKET_W / 2 + GROOVE_D + GATE_CLR + 1.0   # the posts are this wide (each side of the centre): 1.0 behind the groove
 
 T_RAD = np.radians(PAD_TILT)
@@ -216,7 +221,7 @@ def squeeze_ribs():
 def holder(grip=True):
     w2 = OUT_W / 2
     outer = Manifold.cube([X_OPEN - X_FAR, OUT_W, TOP]).translate([X_FAR, -w2, 0])
-    outer += Manifold.cube([2 * BASE_X, OUT_W, FLOOR_TOP]).translate([-BASE_X, -w2, 0])   # base under both screws
+    outer += Manifold.cube([BASE_X + X_FLARE1, OUT_W, FLOOR_TOP]).translate([-BASE_X, -w2, 0])   # base under both screws (the posts finish its +x end)
     # The pocket's floor corners are rounded like the Dragy's bottom edges, FIT clear of them.
     pocket = rounded_bottom_block(DRAGY_L, DRAGY_W, DRAGY_R, DRAGY_EDGE_R, POCKET_H, grow=FIT).translate([0, 0, FLOOR_TOP])
     # ...and its sides run straight out of the open end: v2-v4's rounded plan corners there narrowed the way
@@ -231,15 +236,20 @@ def holder(grip=True):
                               [-POCKET_L / 2 + LIP, -(POCKET_W - 2 * LIP) / 2, FLOOR_TOP + POCKET_H + LIP]))
     slope += slope.translate([10, 0, 0])   # the lips' 45 deg undersides run straight out of the open end too, like the pocket
                                            # (v5 at first left their rounded corners there: a flat ceiling that needed supports)
-    # Posts: the side walls run on past the open end, a little wider, round the gate's grooves (the Dragy
-    # still slides in between them: they're no narrower than the pocket).
-    posts = (rounded_rect(X_POST - X_OPEN + 1 + 2 * POST_R, 2 * POST_W2, POST_R).translate([(X_OPEN - 1 + X_POST) / 2 - POST_R, 0])
-             ^ CrossSection.square([X_POST - X_OPEN + 1, 2 * POST_W2]).translate([X_OPEN - 1, -POST_W2]))
+    # Posts: the side walls run on past the open end to the base's end, round the gate's grooves (the Dragy
+    # still slides in between them: they're no narrower than the pocket). They're wider than the walls, so the
+    # walls flare out to them over FLARE, and the end's two outer corners are rounded END_R.
+    c = CrossSection.circle(END_R, 48)
+    posts = CrossSection.batch_hull([CrossSection.square([0.01, OUT_W]).translate([X_FLARE0 - 1, -w2]),
+                               CrossSection.square([0.01, OUT_W]).translate([X_FLARE0, -w2]),
+                               CrossSection.square([0.01, 2 * POST_W2]).translate([X_FLARE1, -POST_W2]),
+                               c.translate([X_POST - END_R, POST_W2 - END_R]), c.translate([X_POST - END_R, -POST_W2 + END_R])])
     outer += posts.extrude(TOP)
     mouth = Manifold.cube([X_POST - X_OPEN + 3, POCKET_W, TOP]).translate([X_OPEN - 1.3, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
     # Round the two nose-side (+y) corners in plan (add anything that sticks out of a wall after this: v3 lost a snap bump).
-    h ^= (nose_rounded(2 * BASE_X, -POST_W2, w2, NOSE_R) + posts).extrude(TOP + 1)
+    body_plan = nose_rounded(2 * BASE_X, -w2, w2, NOSE_R) - CrossSection.square([BASE_X, OUT_W + 2]).translate([X_FLARE0 - 0.5, -w2 - 1])
+    h ^= (body_plan + posts).extrude(TOP + 1)   # the posts' outline takes over from X_FLARE0
     h -= grooves()
     h -= click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR)   # the notches, for the plate pushed out
     # Push-out hole through the far wall: straight sides, then a 45 deg point (each layer held by the sides).
@@ -396,7 +406,7 @@ def main():
     d_back = d.translate([-FIT, 0, 0])                 # the Dragy against the far wall
     pocket_plan = pad_outline().translate([0, -HOLES_NOSEWARD])
     lift = lambda m: Manifold.batch_boolean([m.translate([0, 0, 0.25 * k]) for k in range(161)], OpType.Add)   # swept up 40 mm
-    lip_box = lambda sy: Manifold.cube([GROOVE_LIP - 0.2, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(
+    lip_box = lambda sy: Manifold.cube([1.0, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(
         [X_GATE + GATE_T + GATE_CLR + 0.1, TRAY_Y + (POCKET_W / 2 + 0.05 if sy > 0 else -POCKET_W / 2 - GROOVE_D + 0.05), FLOOR_TOP + 0.1])
     checks = {
         "holder inside the pad's pocket": (h ^ cast).volume() < 0.01,
