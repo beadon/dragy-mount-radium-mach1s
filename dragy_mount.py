@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 8
+VERSION = 9
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -79,6 +79,8 @@ TRAY_Y = -3.6        # the holder's body (and the Dragy and gate) sits this far 
 SLOT = 1.0           # the screw holes are slots, this far each way along the board (the 2 mm above is an estimate)
 NOSE_R = 6.0         # the holder's two nose-side corners (plan view) are rounded this much, to clear the pocket's
                      # rounder nose-side corners
+TAIL_R = 6.0         # the far end's tail-side corner too (v8: the last sharp corner, owner 2026-11-18); the open end's
+                     # tail-side corner is the posts' END_R
 FIT = 0.25           # clearance per side round the Dragy
 WALL = 1.3           # side walls: 3 clean lines at 0.45 mm (was 2.4, then 1.8: stiffer than needed, owner 2026-11-16)
 END_WALL = 3.6       # far-end wall: thicker, as the screw's counterbore runs into it
@@ -248,7 +250,7 @@ def holder(grip=True):
     mouth = Manifold.cube([X_POST - X_OPEN + 3, POCKET_W, TOP]).translate([X_OPEN - 1.3, -POCKET_W / 2, FLOOR_TOP])
     h = outer - pocket - opening - slope - mouth
     # Round the two nose-side (+y) corners in plan (add anything that sticks out of a wall after this: v3 lost a snap bump).
-    body_plan = nose_rounded(2 * BASE_X, -w2, w2, NOSE_R) - CrossSection.square([BASE_X, OUT_W + 2]).translate([X_FLARE0 - 0.5, -w2 - 1])
+    body_plan = nose_rounded(2 * BASE_X, -w2, w2, NOSE_R, TAIL_R) - CrossSection.square([BASE_X, OUT_W + 2]).translate([X_FLARE0 - 0.5, -w2 - 1])
     h ^= (body_plan + posts).extrude(TOP + 1)   # the posts' outline takes over from X_FLARE0
     h -= grooves()
     h -= click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR)   # the notches, for the plate pushed out
@@ -348,9 +350,12 @@ def gate_spring():
     return lambda d: (6 * E * I * d / (a * a * (3 * L - 4 * a)), 100 * 3 * d * GATE_T / (a * (3 * L - 4 * a)))
 
 
-def nose_rounded(l, y0, y1, r):
-    """Plan rectangle l across (centred on x = 0), from y0 to y1, its two +y corners rounded at r."""
-    parts = [CrossSection.square([l, 0.01]).translate([-l / 2, y0])]
+def nose_rounded(l, y0, y1, r, r_tail=0.0):
+    """Plan rectangle l across (centred on x = 0), from y0 to y1, its two +y corners rounded at r (and its -x, -y
+    corner at r_tail, if given)."""
+    parts = [CrossSection.square([l, 0.01]).translate([-l / 2 + r_tail, y0])]
+    if r_tail:
+        parts += [CrossSection.circle(r_tail, 64).translate([-l / 2 + r_tail, y0 + r_tail])]
     parts += [CrossSection.circle(r, 64).translate([sx * (l / 2 - r), y1 - r]) for sx in (1, -1)]
     return CrossSection.batch_hull(parts)
 

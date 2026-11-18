@@ -7,23 +7,23 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v8, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
+**Status:** v9, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
 rattle along the Dragy's length, but the Dragy could move a fraction of a mm up and down; v6 squeezes it, but its shallow
-grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts, and v8 flares the walls out to them; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts, v8 flares the walls out to them, and v9 rounds the last sharp corner; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v8, shaded renders](docs/render.png)
+![Dragy mount v9, shaded renders](docs/render.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v8.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
-| Gate | `dragy_gate_v8.stl` | Upside down, standing on its ridge. No supports (a brim helps it stand). **PLA** (PETG if it relaxes in the heat): it's the spring. |
-| Assembly | `dragy_assembly_v8.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2-v8. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v9.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
+| Gate | `dragy_gate_v9.stl` | Upside down, standing on its ridge. No supports (a brim helps it stand). **PLA** (PETG if it relaxes in the heat): it's the spring. |
+| Assembly | `dragy_assembly_v9.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2-v9. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -125,7 +125,8 @@ shoe not dropping into the hole or not locking, a pinched mesh).
   that stays in); the 1.27 mm gate, its 0.2 mm preload and the squeeze ribs kept
 - [x] v8: the side walls flare out to the posts over 5 mm (no step), and the posts run on to the base's end with one 2 mm
   rounding each side (v7's posts stood out as a bump, with the base's end a step beyond them). 1.15 mm to the pocket
-- [ ] Print v8: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
+- [x] v9: the far end's tail-side corner rounded 6 mm like its nose-side one (it was the last sharp corner)
+- [ ] Print v9: is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
   click in, lift out with a fingernail, and stay put on the road? Does a charging cable reach over the rim?
 
 ## License
