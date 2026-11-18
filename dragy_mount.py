@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 10
+VERSION = 11
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -118,7 +118,16 @@ FLARE = 5.0          # the side walls thicken gradually to the posts' width over
 # (it replaces v5-v9's ridge). The gate prints upside down, standing on the head.
 HEAD_GAP = 0.3       # the head's underside is this far above the posts' tops (the plate stands on the shelf)
 HEAD_T = 1.5         # its thickness
-HEAD_OVER = 1.0      # past the posts' ends (+x)
+# Latch (v11, owner 2026-11-18): a tab hangs from the middle of the head's lip down the outside of the holder's end,
+# below the floor's top, where a hook on its inside snaps into a slot in the end face. The hook's top is a barb (it
+# slopes down into the slot), so pulling the gate up pulls it in deeper: flick the tab's bottom out to release it.
+TAB_W, TAB_T = 8.0, 1.2   # the tab's width (y) and thickness (x); it's long (~19 mm), so it bends gently
+TAB_CLR = 0.15       # the tab's inside face is this far off the holder's end face
+HOOK_D = 0.7         # the hook reaches this far into the slot
+HOOK_DROP = 1.2      # its catch drops HOOK_DROP x HOOK_D over its depth (50 deg: no supports either way up)
+HOOK_Z = 3.0         # the catch's top (at the end face) is this far below the floor's top edge
+SLOT_CLR = 0.15      # the slot is this much bigger all round
+HEAD_OVER = TAB_CLR + TAB_T   # past the posts' ends (+x): over the tab
 PRELOAD = 0.2        # the pads reach this far into the Dragy's end face with the Dragy against the far wall (v5: 0.4)
 PAD_Y = (7.3, -8.3)  # the pads' centres along y (Dragy-centred): clear of the USB-C cut-out, which runs
                      # from -6.57 to 3.27, and of the end face's rounded corners (|y| > 9.48)
@@ -267,6 +276,7 @@ def holder(grip=True):
     prof = CrossSection([[(-PUSH_W / 2, 0), (PUSH_W / 2, 0), (PUSH_W / 2, PUSH_H), (0, tall), (-PUSH_W / 2, PUSH_H)]]).translate([PUSH_Y, 0])
     rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
     h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
+    h -= latch_slot()
     if grip:
         h += squeeze_ribs()
     # Move the body TRAY_Y toward the tail of the screws.
@@ -347,12 +357,42 @@ def head():
     return plan.extrude(HEAD_T).translate([0, 0, TOP + HEAD_GAP])
 
 
-def gate(with_pads=True):
-    """The plate that closes the open end, with its pads (pad frame)."""
+def hook_section(grow=0.0, x0=X_POST + TAB_CLR):
+    """The hook in section (x, z), on the tab's inside face at x0; grown, the slot (opening out through the end face)."""
+    zt = FLOOR_TOP - HOOK_Z
+    zb = zt - HOOK_DROP * HOOK_D - 0.3
+    if grow:
+        x0, d = X_POST, HOOK_D + grow
+        return CrossSection([[(x0 + 1, zt + grow + 1), (x0, zt + grow), (x0 - d, zt - HOOK_DROP * HOOK_D),
+                              (x0 - d, zb - grow), (x0 + 1, zb - grow - d - 1)]])
+    return CrossSection([[(x0 + 0.01, zt), (x0 - HOOK_D, zt - HOOK_DROP * HOOK_D), (x0 - HOOK_D, zb), (x0 + 0.01, zb - HOOK_D)]])
+
+
+def along_y(sec, w):
+    """A section in (x, z) extruded w along y, centred on y = 0."""
+    return s.place(sec.extrude(w), np.array([[1.0, 0, 0], [0, 0, 1.0], [0, 1.0, 0]]), [0, -w / 2, 0])
+
+
+def latch():
+    """The tab and its hook (holder's frame, before TRAY_Y)."""
+    x0 = X_POST + TAB_CLR
+    z_bot = FLOOR_TOP - HOOK_Z - HOOK_DROP * HOOK_D - 0.3 - HOOK_D - 1.0   # a little below the hook, to pull on
+    tab = Manifold.cube([TAB_T, TAB_W, TOP + HEAD_GAP + 0.01 - z_bot]).translate([x0, -TAB_W / 2, z_bot])
+    return tab + along_y(hook_section(), TAB_W)
+
+
+def latch_slot():
+    return along_y(hook_section(grow=SLOT_CLR), TAB_W + 2 * SLOT_CLR)
+
+
+def gate(with_pads=True, with_latch=True):
+    """The plate that closes the open end, with its pads and latch (pad frame)."""
     y2 = POCKET_W / 2 + GROOVE_D
     g = Manifold.cube([GATE_T, 2 * y2, TOP + HEAD_GAP + 0.01 - FLOOR_TOP]).translate([X_GATE, -y2, FLOOR_TOP])
     g += head()
     g += click(X_GATE + GATE_T)
+    if with_latch:
+        g += latch()
     if with_pads:
         g += pads()
     return g.translate([0, TRAY_Y, 0])
@@ -440,8 +480,11 @@ def main():
         "screws clear of holder and Dragy (heads seated)": all((sc ^ m).volume() < 0.01 for m in (h, d)),
         "screws end flush with the casting's underside": abs(SEAT - SCREW_LEN + THREAD) < 1e-9,
         "gate clear of the holder": (gt ^ h).volume() < 0.01,
-        "gate lifts straight up out, its clicks pushed back into the grooves' play": (lift(gt.translate([-0.15, 0, 0])) ^ h).volume() < 0.01,
-        "...but not while the spring holds it out against the grooves (the clicks hold)": (lift(gt.translate([GATE_CLR, 0, 0])) ^ h).volume() > 0.5,
+        "gate lifts straight up out, its clicks pushed back into the grooves' play and the tab flicked out": (
+            lift(gate(with_latch=False).translate([-0.15, 0, 0]) + latch().translate([HOOK_D + SLOT_CLR + 0.05, TRAY_Y, 0])) ^ h).volume() < 0.01,
+        "...but not while the spring holds it out against the grooves (the clicks hold)": (lift(gate(with_latch=False).translate([GATE_CLR, 0, 0])) ^ h).volume() > 0.5,
+        "...nor while the hook's in its slot": (lift(gate().translate([-0.15, 0, 0])) ^ h).volume() > 0.01,
+        "the hook's slot clear of the screws' counterbores": (latch_slot().translate([0, TRAY_Y, 0]) ^ sc).volume() < 0.01,
         "gate clear of the holder, pushed out against the grooves": (gt.translate([GATE_CLR, 0, 0]) ^ h).volume() < 0.01,
         "the clicks fit inside the grooves' play (they can slide down past the walls)": CLICK_H + 0.05 <= 2 * GATE_CLR,
         "gate clear of the screws": (gt ^ sc).volume() < 0.01,
@@ -461,7 +504,7 @@ def main():
             ((s.rod(0.5, 7.0, SEAT - 0.5).translate([0, sy * SLOT, 0]) - slot(0.5, BOLT_HOLE + 0.1, SEAT - 0.5))
              .translate([sx * M4_SPACING / 2, 0, 0]) - h).volume() < 0.01 for sx in (1, -1) for sy in (1, -1, 0)),
         "holder prints floor down with no overhang past 45 deg (no supports)": overhang_area(h) < 0.01,
-        "gate prints upside down on its ridge with no overhang past 45 deg": overhang_area(s.face_down(gt, [0, 0, 1.0])) < 0.01,
+        "gate prints upside down on its head with no overhang past 45 deg": overhang_area(s.face_down(gt, [0, 0, 1.0])) < 0.01,
         "a charging plug clears the pocket's rim and the posts": (usb_plug() ^ cast).is_empty() and (usb_plug() ^ h).is_empty(),
     }
     for k, v in checks.items():
@@ -475,8 +518,10 @@ def main():
     al, mu = np.radians(CLICK_UP), 0.3      # each groove carries one pad's push (shared by its two clicks); PLA on PLA, friction ~0.3
     k = (np.sin(al) + mu * np.cos(al)) / (np.cos(al) - mu * np.sin(al))
     print(f"lifting the gate out past its clicks (estimate): {2 * k * f0:.0f}-{2 * k * f1:.0f} N in all")
+    L = TOP + HEAD_GAP - (FLOOR_TOP - HOOK_Z)
+    print(f"latch tab: {L:.1f} mm from the head to the hook; strain to release it ~{100 * 1.5 * TAB_T * (HOOK_D + SLOT_CLR) / L ** 2:.2f} %")
     s.write_stl(s.face_down(h, [0, 0, -1.0]), out / f"dragy_holder_v{VERSION}.stl")   # floor down: no supports
-    s.write_stl(s.face_down(gt, [0, 0, 1.0]), out / f"dragy_gate_v{VERSION}.stl")     # upside down, on its ridge
+    s.write_stl(s.face_down(gt, [0, 0, 1.0]), out / f"dragy_gate_v{VERSION}.stl")     # upside down, on its head
     colours = {"truck": (0.55, 0.55, 0.58), "tray": (0.80, 0.15, 0.12), "gate": (0.95, 0.65, 0.10),
                "dragy": (0.25, 0.45, 0.85), "steel": (0.2, 0.2, 0.2)}
     scene = {"front_swingarm_pad_schematic": (to_world(cast), "truck"), "dragy_holder": (to_world(h), "tray"),

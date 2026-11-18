@@ -6,7 +6,7 @@ with the profile below. The support settings matter most: they're tuned so suppo
 ## Profile
 
 Based on the system profile **0.20mm SPEED @MK4IS 0.4**, saved as a copy, with filament **Generic PLA**
-(v2-v4's USB-C cap was TPU; v5-v10's gate is PLA).
+(v2-v4's USB-C cap was TPU; v5-v11's gate is PLA).
 
 | Setting | Value |
 |---|---|
@@ -48,16 +48,17 @@ pockets and slots that would be hard to clear.
 
 ## Per part
 
-- **Holder** (`dragy_holder_v10.stl`): floor down. Supports off: nothing overhangs. The lips' undersides
+- **Holder** (`dragy_holder_v11.stl`): floor down. Supports off: nothing overhangs. The lips' undersides
   are 45° (so are the squeeze ribs' undersides), the screw counterbores and the gate's grooves are vertical, and the far-end push-out hole has a
   45° pointed top.
 - If the slicer still adds supports, it's because "Support on build plate only" is on with auto supports:
   turn supports off for this part.
-- **Gate** (`dragy_gate_v10.stl`): upside down, standing on its head (as exported), so the head's fingernail lip
-  prints sharp, and the plate bends along its layers, not across them. Supports off: the pads and the clicks are
-  45° or steeper. The head is a 5 mm-wide foot, so it shouldn't need a brim. PLA, the same profile;
+- **Gate** (`dragy_gate_v11.stl`): upside down, standing on its head (as exported), so the head's fingernail lip
+  prints sharp, and the plate bends along its layers, not across them. Supports off: the pads, the clicks and the latch's hook are
+  45° or steeper. The latch tab stands vertical and bends across its layers: if its root cracks, print hotter for
+  better layer bonding, or in PETG. The head is a 5 mm-wide foot, so it shouldn't need a brim. PLA, the same profile;
   the 1.27 mm plate is 3 lines, and it's the spring: its stiffness goes as its thickness cubed, so change
   `GATE_T` only with `PRELOAD` (v5's 0.86 mm, 2 lines, felt flimsy). If PLA relaxes
   in a hot pocket over time, print it in PETG.
-- **Shoe** (`shoe.stl`, not used by v2-v10): as exported, top face down, plug up. Supports off: with them on,
+- **Shoe** (`shoe.stl`, not used by v2-v11): as exported, top face down, plug up. Supports off: with them on,
   build-plate-only supports can reach into the side-opening nut slots.
