@@ -7,23 +7,23 @@ The holder sits in the recessed pad on top of the **front swingarm**, beyond the
 the sky is open, and screws into the pad's two M4 threaded holes, which Radium put there for
 accessories like this.
 
-**Status:** v11, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
+**Status:** v12, not yet printed. v5 (2026-11-17) printed well: its PLA gate (which replaced v4's TPU cap) stops the
 rattle along the Dragy's length, but the Dragy could move a fraction of a mm up and down; v6 squeezes it, but its shallow
-grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts, v8 flares the walls out to them, v9 rounds the last sharp corner, v10 caps the gate and clicks it in at the top too, and v11 latches it with a hook; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
+grooves didn't hold the gate, so v7 brings back v5's deeper grooves and wider posts, v8 flares the walls out to them, v9 rounds the last sharp corner, v10 caps the gate and clicks it in at the top too, v11 latches it with a hook, and v12 sets the gate's head level with the top; see the roadmap. v1 bolted a tray onto the **shoe** (`shoe.py`), the anchor that
 locks into the oval hole and that holds the rear lights in
 [beadon/shredlight-mounts](https://github.com/beadon/shredlight-mounts). The front pad's threaded
 holes make that unnecessary here, but the shoe stays in this repo as its own component for other uses.
 
-![Dragy mount v11, shaded renders](docs/render.png)
+![Dragy mount v12, shaded renders](docs/render.png)
 
 ## Parts
 
 | Part | File (in `out/`) | Print |
 |---|---|---|
-| Holder | `dragy_holder_v11.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
-| Gate | `dragy_gate_v11.stl` | Upside down, standing on its head. No supports. **PLA** (PETG if it relaxes in the heat): it's the spring. |
-| Assembly | `dragy_assembly_v11.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
-| Shoe (separate component) | `shoe.stl` | Not used by v2-v11. Top face down, plug up, no supports. See `shoe.py`. |
+| Holder | `dragy_holder_v12.stl` | Floor down. No supports: nothing overhangs (45° lip undersides, a pointed top on the far-end push-out hole, vertical grooves). |
+| Gate | `dragy_gate_v12.stl` | Upside down, standing on its head. No supports. **PLA** (PETG if it relaxes in the heat): it's the spring. |
+| Assembly | `dragy_assembly_v12.obj` (+ `.mtl`) | For Blender: the parts in a schematic front swingarm pad. Not for printing. |
+| Shoe (separate component) | `shoe.stl` | Not used by v2-v12. Top face down, plug up, no supports. See `shoe.py`. |
 
 See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
 
@@ -53,15 +53,15 @@ See [PRINT_SETTINGS.md](PRINT_SETTINGS.md) for the slicer profile.
   on the base's shelf. **The plate is the spring:** two pads on its inside press on the Dragy's end face
   either side of the USB-C opening (nothing touches the port), so the plate bows between its grooves and
   holds the Dragy against the far wall: no rattle along its length. The pads reach 0.2 mm into the Dragy
-  with it against the far wall, where they push it as the gate goes in (estimate: ~4.7 N per pad, 0.2 % strain;
-  16 N and 0.7 % if the Dragy stayed 0.5 mm out, still well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
-  top edge and push it back. Its **head**, a 1.5 mm cap, covers both posts' tops (hiding the grooves), flush with their
-  sides, and reaches 1.35 mm past their ends, over the **latch**: a tab (8 × 1.2 mm) hangs from the middle of the lip down the
+  with it against the far wall, where they push it as the gate goes in (estimate: ~4.1 N per pad, 0.2 % strain;
+  14 N and 0.7 % if the Dragy stayed 0.5 mm out, still well within PLA's range). Their undersides are 45°, so as the gate goes down they ride over the Dragy's
+  top edge and push it back. Its **head**, a 1.5 mm cap, sits in a recess cut into both posts' tops, level with the holder's top (hiding the
+  grooves), flush with their sides, and reaches 1.35 mm past their ends, over the **latch**: a tab (8 × 1.2 mm) hangs from the middle of the lip down the
   outside of the holder's end, and a hook on its inside snaps into a slot in the end face, 3 mm below the floor's top.
   The hook's top is a barb, so pulling on the gate only pulls it in deeper. Flick the tab's bottom out (~0.85 mm) and lift the gate out to charge
   (it needs ~20 mm of room above the holder). It **clicks** in: a 0.3 mm ridge near the bottom and another near the top
   of each of its edges drop into notches in its groove, and the plate's own spring holds them there, so it can't
-  vibrate or rock out. The ridges' tops are a shallow 30°, so a firm pull lifts it out (estimate: ~10 N).
+  vibrate or rock out. The ridges' tops are a shallow 30°, so a firm pull lifts it out (estimate: ~9 N).
 - **The pocket's sides run straight out of the open end** (v5): in v2-v4 its rounded plan corners narrowed
   the way out by ~1 mm each side, so the Dragy only got in by bending the walls.
 - **The USB-C port is off centre** (measured): its case cut-out is 6.91 mm from one side wall and 10.21 mm
@@ -134,7 +134,9 @@ shoe not dropping into the hole or not locking, a pinched mesh).
 - [x] v11: a hook latch: a tab from the middle of the head's lip down the holder's end, its barbed hook in a slot in
   the end face (flick the tab out to release). The tab prints vertical (bending across its layers), but long and gentle
   (0.44 % strain): watch its root
-- [ ] Print v11: does the tab snap in and release without cracking at its root? is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
+- [x] v12: the gate's head sits in a 1.8 mm recess in the posts' tops, level with the holder's top; the top clicks 1 mm lower
+  to stay under the recess; the tab 16.9 mm (0.53 % strain to release)
+- [ ] Print v12: does the tab snap in and release without cracking at its root? Does the head sit level? is the Dragy held tight up and down, and does it still slide in and out by hand? Does the gate
   click in, lift out with a fingernail, and stay put on the road? Does a charging cable reach over the rim?
 
 ## License

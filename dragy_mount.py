@@ -34,7 +34,7 @@ from manifold3d import CrossSection, JoinType, Manifold, OpType
 
 import shoe as s
 
-VERSION = 11
+VERSION = 12
 
 # --- The front swingarm's pad (owner's measurements, 2026-11-16) ---
 PAD_TILT = 30.0      # from flat, rising toward the nose (the lip of the oval hole is at its front, higher end)
@@ -116,8 +116,10 @@ FLARE = 5.0          # the side walls thicken gradually to the posts' width over
 # The gate's head (v10, owner 2026-11-18): a cap on top of the plate that covers both posts' tops, hiding the grooves,
 # flush with the posts' sides; it reaches HEAD_OVER past the posts' ends, a square-edged lip a fingernail catches
 # (it replaces v5-v9's ridge). The gate prints upside down, standing on the head.
-HEAD_GAP = 0.3       # the head's underside is this far above the posts' tops (the plate stands on the shelf)
-HEAD_T = 1.5         # its thickness
+# v12 (owner 2026-11-18): the head sits in a recess cut into the posts' tops, its top level with the holder's top.
+HEAD_GAP = 0.3       # the head's underside is this far above the recess's floor (the plate stands on the shelf)
+HEAD_T = 1.5         # its thickness, and so (with HEAD_GAP) the recess's depth
+HEAD_CLR = 0.2       # between the head's inner edge and the recess's wall
 # Latch (v11, owner 2026-11-18): a tab hangs from the middle of the head's lip down the outside of the holder's end,
 # below the floor's top, where a hook on its inside snaps into a slot in the end face. The hook's top is a barb (it
 # slopes down into the slot), so pulling the gate up pulls it in deeper: flick the tab's bottom out to release it.
@@ -136,7 +138,7 @@ PAD_W = 1.6          # each pad's width along y
 # the groove's outer wall. The pads' spring pushes the plate outward, so it holds the ridge in the notch;
 # lifting the gate means pushing the ridge back out against it (owner, 2026-11-17: so it can't vibrate out).
 CLICK_H = 0.3        # the ridge's height (the grooves' play is 2 x GATE_CLR = 0.4, so it slides down past the wall)
-CLICK_Z = (2.0, 13.4)   # its tips' heights above the shelf: one near the bottom, and (v10) one near the top, so the
+CLICK_Z = (2.0, 12.4)   # its tips' heights above the shelf: one near the bottom, and (v10) one near the top, so the
                         # plate's edge is held at both ends of the groove, not just at the bottom (owner 2026-11-18)
 CLICK_UP = 30.0      # its top face, from the wall (deg): shallow, so a pull lifts it out; 45 deg underneath leads it in
 CLICK_CLR = 0.1      # the notch is this much bigger all round
@@ -156,6 +158,7 @@ X_POST = BASE_X                              # the posts run on past the open en
 GROOVE_LIP = X_POST - (X_GATE + GATE_T + GATE_CLR)   # wall beyond the groove (toward +x) that takes the plate's push
 X_FLARE1 = X_OPEN - 0.5                      # the walls reach the posts' full width here, before the grooves
 X_FLARE0 = X_FLARE1 - FLARE
+X_HEAD = X_OPEN                              # the gate's head's inner edge: past the Dragy's end, over the grooves
 POST_W2 = POCKET_W / 2 + GROOVE_D + GATE_CLR + 1.0   # the posts are this wide (each side of the centre): 1.0 behind the groove
 
 T_RAD = np.radians(PAD_TILT)
@@ -277,6 +280,8 @@ def holder(grip=True):
     rot = np.array([[0, 0, 1.0], [1.0, 0, 0], [0, 1.0, 0]])   # profile (y, z), extruded along +x
     h -= s.place(prof.extrude(END_WALL + 2), rot, [X_FAR - 1, 0, z0])
     h -= latch_slot()
+    # The recess the gate's head sits in, level with the top.
+    h -= Manifold.cube([10, 2 * POST_W2 + 2, 10]).translate([X_HEAD - HEAD_CLR, -POST_W2 - 1, TOP - HEAD_T - HEAD_GAP])
     if grip:
         h += squeeze_ribs()
     # Move the body TRAY_Y toward the tail of the screws.
@@ -348,13 +353,14 @@ def click(x0, grow=0.0, extra=0.0):
 
 
 def head():
-    """The gate's head (holder's frame, before TRAY_Y): the posts' full-width outline from where the walls' flare
-    ends to HEAD_OVER past the posts' ends, its outer corners rounded END_R like the posts'."""
+    """The gate's head (holder's frame, before TRAY_Y): the posts' full-width outline from the open end (clear of
+    the Dragy) to HEAD_OVER past the posts' ends, its outer corners rounded END_R like the posts', its top level
+    with the holder's."""
     c = CrossSection.circle(END_R, 48)
     x1 = X_POST + HEAD_OVER
-    plan = CrossSection.batch_hull([CrossSection.square([0.01, 2 * POST_W2]).translate([X_FLARE1, -POST_W2]),
+    plan = CrossSection.batch_hull([CrossSection.square([0.01, 2 * POST_W2]).translate([X_HEAD, -POST_W2]),
                                     c.translate([x1 - END_R, POST_W2 - END_R]), c.translate([x1 - END_R, -POST_W2 + END_R])])
-    return plan.extrude(HEAD_T).translate([0, 0, TOP + HEAD_GAP])
+    return plan.extrude(HEAD_T).translate([0, 0, TOP - HEAD_T])
 
 
 def hook_section(grow=0.0, x0=X_POST + TAB_CLR):
@@ -377,7 +383,7 @@ def latch():
     """The tab and its hook (holder's frame, before TRAY_Y)."""
     x0 = X_POST + TAB_CLR
     z_bot = FLOOR_TOP - HOOK_Z - HOOK_DROP * HOOK_D - 0.3 - HOOK_D - 1.0   # a little below the hook, to pull on
-    tab = Manifold.cube([TAB_T, TAB_W, TOP + HEAD_GAP + 0.01 - z_bot]).translate([x0, -TAB_W / 2, z_bot])
+    tab = Manifold.cube([TAB_T, TAB_W, TOP - HEAD_T + 0.01 - z_bot]).translate([x0, -TAB_W / 2, z_bot])
     return tab + along_y(hook_section(), TAB_W)
 
 
@@ -388,7 +394,7 @@ def latch_slot():
 def gate(with_pads=True, with_latch=True):
     """The plate that closes the open end, with its pads and latch (pad frame)."""
     y2 = POCKET_W / 2 + GROOVE_D
-    g = Manifold.cube([GATE_T, 2 * y2, TOP + HEAD_GAP + 0.01 - FLOOR_TOP]).translate([X_GATE, -y2, FLOOR_TOP])
+    g = Manifold.cube([GATE_T, 2 * y2, TOP - HEAD_T + 0.01 - FLOOR_TOP]).translate([X_GATE, -y2, FLOOR_TOP])
     g += head()
     g += click(X_GATE + GATE_T)
     if with_latch:
@@ -403,7 +409,7 @@ def gate_spring():
     bending). Returns (force per pad in N, strain in %) at deflection d (mm), for PLA (E ~3.5 GPa)."""
     E, L = 3500.0, POCKET_W + GROOVE_D
     a = L / 2 - np.mean(np.abs(PAD_Y))
-    I = (TOP + HEAD_GAP - FLOOR_TOP) * GATE_T ** 3 / 12
+    I = (TOP - HEAD_T - FLOOR_TOP) * GATE_T ** 3 / 12
     return lambda d: (6 * E * I * d / (a * a * (3 * L - 4 * a)), 100 * 3 * d * GATE_T / (a * (3 * L - 4 * a)))
 
 
@@ -468,7 +474,7 @@ def main():
     d_back = d.translate([-FIT, 0, 0])                 # the Dragy against the far wall
     pocket_plan = pad_outline().translate([0, -HOLES_NOSEWARD])
     lift = lambda m: Manifold.batch_boolean([m.translate([0, 0, 0.25 * k]) for k in range(161)], OpType.Add)   # swept up 40 mm
-    lip_box = lambda sy: Manifold.cube([1.0, GROOVE_D - 0.1, TOP - FLOOR_TOP - 0.2]).translate(
+    lip_box = lambda sy: Manifold.cube([1.0, GROOVE_D - 0.1, TOP - HEAD_T - HEAD_GAP - FLOOR_TOP - 0.2]).translate(
         [X_GATE + GATE_T + GATE_CLR + 0.1, TRAY_Y + (POCKET_W / 2 + 0.05 if sy > 0 else -POCKET_W / 2 - GROOVE_D + 0.05), FLOOR_TOP + 0.1])
     checks = {
         "holder inside the pad's pocket": (h ^ cast).volume() < 0.01,
@@ -488,9 +494,10 @@ def main():
         "gate clear of the holder, pushed out against the grooves": (gt.translate([GATE_CLR, 0, 0]) ^ h).volume() < 0.01,
         "the clicks fit inside the grooves' play (they can slide down past the walls)": CLICK_H + 0.05 <= 2 * GATE_CLR,
         "gate clear of the screws": (gt ^ sc).volume() < 0.01,
-        "the head covers both grooves": X_FLARE1 <= X_GATE - GATE_CLR and X_POST + HEAD_OVER >= X_GATE + GATE_T + GATE_CLR
+        "the head covers both grooves": X_HEAD <= X_GATE - GATE_CLR and X_POST + HEAD_OVER >= X_GATE + GATE_T + GATE_CLR
             and POST_W2 >= POCKET_W / 2 + GROOVE_D + GATE_CLR,
-        "the clicks' notches stay below the posts' tops": FLOOR_TOP + max(CLICK_Z) + CLICK_H / np.tan(np.radians(CLICK_UP)) + 0.5 <= TOP,
+        "the clicks' notches stay below the posts' tops": FLOOR_TOP + max(CLICK_Z) + CLICK_H / np.tan(np.radians(CLICK_UP)) + 0.5 <= TOP - HEAD_T - HEAD_GAP,
+        "the head's recess clear of the Dragy (its inner wall past the Dragy's end, pushed out)": X_HEAD - HEAD_CLR >= X_OPEN - FIT + 0.03,
         "both grooves have a full-height lip behind the plate (bar the click's notch)": all(
             (lip_box(sy) - h - click(X_GATE + GATE_T + GATE_CLR, grow=CLICK_CLR, extra=GATE_CLR).translate([0, TRAY_Y, 0])).volume() < 0.01
             for sy in (1, -1)),
@@ -518,7 +525,7 @@ def main():
     al, mu = np.radians(CLICK_UP), 0.3      # each groove carries one pad's push (shared by its two clicks); PLA on PLA, friction ~0.3
     k = (np.sin(al) + mu * np.cos(al)) / (np.cos(al) - mu * np.sin(al))
     print(f"lifting the gate out past its clicks (estimate): {2 * k * f0:.0f}-{2 * k * f1:.0f} N in all")
-    L = TOP + HEAD_GAP - (FLOOR_TOP - HOOK_Z)
+    L = TOP - HEAD_T - (FLOOR_TOP - HOOK_Z)
     print(f"latch tab: {L:.1f} mm from the head to the hook; strain to release it ~{100 * 1.5 * TAB_T * (HOOK_D + SLOT_CLR) / L ** 2:.2f} %")
     s.write_stl(s.face_down(h, [0, 0, -1.0]), out / f"dragy_holder_v{VERSION}.stl")   # floor down: no supports
     s.write_stl(s.face_down(gt, [0, 0, 1.0]), out / f"dragy_gate_v{VERSION}.stl")     # upside down, on its head
